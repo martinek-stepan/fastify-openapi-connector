@@ -1,0 +1,29 @@
+{
+    "name": "@ste.martinek/fastify-openapi-connector",
+    "private": false,
+    "version": "0.0.7",
+    "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI spec",
+    "type": "module",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {  
+      "build": "tsc",
+      "publish:npm": "tsc && npm publish --access public"
+    },
+    "engines": {
+      "node": ">=18"
+    },
+    "author": "Stepan Martinek",
+    "license": "MIT",
+    "dependencies": {
+      "fastify-plugin": "4.5.1"
+    },
+    "peerDependencies": {
+      "fastify": "4.24.3"
+    },
+    "devDependencies": {
+      "typescript": "5.2.2",
+      "ts-node": "10.9.1",
+      "@types/node": "18.18.1"
+    }
+  }
