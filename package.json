@@ -1,14 +1,14 @@
 {
   "name": "fastify-openapi-connector",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI specification",
   "author": "Stepan Martinek",
 
   "repository": {
     "type": "git",
-    "url": "https://github.com/martinek-stepan/fastify-openapi-connector"
+    "url": "git+https://github.com/martinek-stepan/fastify-openapi-connector"
   },
-  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#fastify-openapi-connector",
+  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#readme",
   "license": "MIT",
   
   "private": false,
