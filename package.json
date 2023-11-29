@@ -1,0 +1,55 @@
+{
+  "name": "fastify-openapi-connector",
+  "version": "0.0.7",
+  "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI specification",
+  "author": "Stepan Martinek",
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martinek-stepan/fastify-openapi-connector"
+  },
+  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#fastify-openapi-connector",
+  "license": "MIT",
+  
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+
+  "scripts": {  
+    "build": "tsc",
+    "publish:npm": "tsc && npm publish --access public"
+  },
+
+  "engines": {
+    "node": ">=18"
+  },
+
+  "dependencies": {
+    "fastify-plugin": "4.x.x"
+  },
+  "peerDependencies": {
+    "fastify": "4.x.x"
+  },
+  "devDependencies": {
+    "ts-node": ">=10",
+    "@types/node": "18.x.x"
+  },
+
+  "keywords": [
+    "fastify",
+    "openapi",
+    "specification",
+    "3.1",
+    "connector",
+    "glue",
+    "routes",
+    "security",
+    "validation",
+    "ajv",
+    "json-schema",
+    "typescript",
+    "esm",
+    "module"
+  ]
+}
