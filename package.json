@@ -1,6 +1,6 @@
 {
   "name": "fastify-openapi-connector",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI specification",
   "author": "Stepan Martinek",
 

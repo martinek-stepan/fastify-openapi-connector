@@ -41,7 +41,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, {openApiSpeci
         config: operationValues["x-fastify-config"], 
         schema: createRouteSchema(operationParams, requestBody),
         // Operation security overrides global security
-        preHandler: createSecurityProcessors(securityHandlers ?? {}, security ?? globalSecurity), 
+        preParsing: createSecurityProcessors(securityHandlers ?? {}, security ?? globalSecurity), 
         
       });
     }
