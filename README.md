@@ -9,7 +9,7 @@ Typescript Node.js package for setting up fastify based on OpenAPI specification
 `npm i --save fastify-openapi-connector`
 
 ### yarn
-`yarm add fastify-openapi-connector`
+`yarn add fastify-openapi-connector`
 
 ## Description
 
