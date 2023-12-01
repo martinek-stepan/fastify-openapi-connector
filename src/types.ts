@@ -6,6 +6,13 @@ export interface Options
   securityHandlers?: SecurityHandlers;
   operationHandlers: OperationHandlers;
   openApiSpecification: OpenAPISpec;
+
+  settings?: {
+    // Should routes from paths be initialized? Default true
+    initializePaths?: boolean;
+    // Should routes from webhooks be initialized? Default true
+    initializeWebhooks?: boolean;
+  }
 }
 
 // Security handling
@@ -32,12 +39,15 @@ export interface Components {
   schemas: Record<string, any>
 }
 
+export interface PathsMap {
+  [name: string]: unknown;
+}
+
 export interface OpenAPISpec {
   components?: Components;
-  security?: SecuritySpecification,
-  paths: {
-    [name: string]: unknown;
-  }
+  security?: SecuritySpecification;
+  paths?: PathsMap;
+  webhooks?: PathsMap;
 };
 
 export interface PathOperation {
@@ -76,4 +86,10 @@ export interface ParsedParameter {
     }
   };
   required?: string[];
+}
+
+export interface ReferenceObject {
+  $ref: string;
+  summary?: string;
+  description?: string;
 }
