@@ -1,30 +1,26 @@
 {
   "name": "fastify-openapi-connector",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI specification",
   "author": "Stepan Martinek",
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/martinek-stepan/fastify-openapi-connector"
   },
   "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#readme",
   "license": "MIT",
-  
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-
-  "scripts": {  
+  "scripts": {
     "build": "tsc",
-    "publish:npm": "tsc && npm publish --access public"
+    "publish:npm": "tsc && npm publish --access public",
+    "format": "biome check --apply ."
   },
-
   "engines": {
     "node": ">=18"
   },
-
   "dependencies": {
     "fastify-plugin": "4.x.x"
   },
@@ -32,10 +28,10 @@
     "fastify": "4.x.x"
   },
   "devDependencies": {
-    "ts-node": ">=10",
-    "@types/node": "18.x.x"
+    "@biomejs/biome": "1.4.1",
+    "@types/node": "18.x.x",
+    "ts-node": ">=10"
   },
-
   "keywords": [
     "fastify",
     "openapi",
