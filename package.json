@@ -1,6 +1,6 @@
 {
   "name": "fastify-openapi-connector",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI specification",
   "author": "Stepan Martinek",
   "repository": {
@@ -16,7 +16,8 @@
   "scripts": {
     "build": "tsc",
     "publish:npm": "tsc && npm publish --access public",
-    "format": "biome check --apply ."
+    "format": "biome check --apply ./src",
+    "lint:ci": "biome ci ./src"
   },
   "engines": {
     "node": ">=18"

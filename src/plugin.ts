@@ -1,25 +1,36 @@
-import { FastifyPluginAsync } from 'fastify';
+import { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
 import { registerComponents } from './components.js';
+import { determinePrefix } from './determinePrefix.js';
 import { setupRoutes } from './setupRoutes.js';
 import { Options } from './types.js';
 
 // define plugin using promises
 const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, { openApiSpecification, securityHandlers, operationHandlers, settings }) => {
-  const { components, security: globalSecurity, paths, webhooks } = openApiSpecification;
+  const { components, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
 
-  registerComponents(fastify, components);
+  const prefix = determinePrefix(settings, servers);
 
-  if (settings?.initializePaths !== false && paths) {
-    setupRoutes(fastify, { operationHandlers, paths, globalSecurity, securityHandlers }, false);
-  }
+  const register = (fastify: FastifyInstance) => {
+    registerComponents(fastify, components);
 
-  if (settings?.initializeWebhooks !== false && webhooks) {
-    setupRoutes(fastify, { operationHandlers, paths: webhooks, globalSecurity, securityHandlers }, true);
-  }
+    if (settings?.initializePaths !== false && paths) {
+      setupRoutes(fastify, { operationHandlers, paths, globalSecurity, securityHandlers }, false);
+    }
 
-  if (!paths && !webhooks) {
-    fastify.log.error('No paths or webhooks found in OpenAPI specification!');
+    if (settings?.initializeWebhooks !== false && webhooks) {
+      setupRoutes(fastify, { operationHandlers, paths: webhooks, globalSecurity, securityHandlers }, true);
+    }
+
+    if (!paths && !webhooks) {
+      fastify.log.error('No paths or webhooks found in OpenAPI specification!');
+    }
+  };
+
+  if (prefix) {
+    fastify.register((instance) => register(instance), { prefix });
+  } else {
+    register(fastify);
   }
 };
 

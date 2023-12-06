@@ -115,7 +115,7 @@ const spec = parse(specFile) as OpenAPISpec;
 
 * Currently cookie paramters are not supported as fastify does not validate cookies out of the box.
 * Subset of OpenAPI v3.1 is used for now
-* Only references in the spec will be resolved when schema validation is registered, however you can register external references to fastify manually with `fastify.addSchema` method.
+* Only references to components/schemas in the spec will be resolved when schema validation is registered, however you can register external references to fastify manually with `fastify.addSchema` method.
 
 ### Contribution
 
