@@ -1,10 +1,14 @@
+import { FastifyInstance } from 'fastify';
 import { Options, ServerObject } from './types.js';
 
-export const determinePrefix = (settings: Options['settings'], servers?: ServerObject[]): string | undefined => {
-  let prefix: string | undefined = settings?.prefix;
+export const determinePrefix = (instance: FastifyInstance, settings: Options['settings'], servers?: ServerObject[]): string | undefined => {
+  if (typeof settings?.prefix === 'string') {
+    return settings.prefix;
+  }
 
-  if (!prefix && settings?.extractPrefixFromServers) {
-    const { urlRegex, descriptionRegex, prefixVariable } = settings.extractPrefixFromServers;
+  let prefix: string | undefined;
+  if (settings?.prefix) {
+    const { urlRegex, descriptionRegex, prefixVariable } = settings.prefix;
 
     const server = servers?.find((server) => {
       if (urlRegex && server.url && urlRegex.test(server.url)) {
@@ -24,6 +28,10 @@ export const determinePrefix = (settings: Options['settings'], servers?: ServerO
 
     if (prefix && !prefix.startsWith('/')) {
       prefix = `/${prefix}`;
+    }
+
+    if (!prefix) {
+      instance.log.warn('Prefix could not be determined from servers. There will be no prefix for routes.');
     }
   }
 
