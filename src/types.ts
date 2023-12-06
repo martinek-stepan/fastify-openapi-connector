@@ -1,7 +1,6 @@
-import { FastifyContextConfig, FastifyRequest, FastifyRequestContext } from "fastify";
+import { FastifyContextConfig, FastifyRequest, FastifyRequestContext } from 'fastify';
 
-export interface Options
-{
+export interface Options {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
   operationHandlers: OperationHandlers;
@@ -12,31 +11,30 @@ export interface Options
     initializePaths?: boolean;
     // Should routes from webhooks be initialized? Default true
     initializeWebhooks?: boolean;
-  }
+  };
 }
 
 // Security handling
 export type SecurityHandler = (req: FastifyRequest, scopes?: string[]) => boolean | Promise<boolean>;
 
-export interface SecurityHandlers
-{
+export interface SecurityHandlers {
   [resolverName: string]: SecurityHandler | undefined;
 }
 
 // Operations handling
 // TODO figure out strong typing with inheretance from Fastify Request & Response
-export interface OperationHandlers
-{
+export interface OperationHandlers {
+  // biome-ignore lint/suspicious/noExplicitAny: Before I figure out better way to type this to work with raw Fastify and typed request, we use any
   [resolverName: string]: (req: any, reply: any) => any | undefined;
 }
 
 // Open API Specification
-export type SecuritySpecification =  {
+export type SecuritySpecification = {
   [securityHandlerName: string]: string[] | undefined;
 }[];
 
 export interface Components {
-  schemas: Record<string, any>
+  schemas: Record<string, object>;
 }
 
 export interface PathsMap {
@@ -48,15 +46,15 @@ export interface OpenAPISpec {
   security?: SecuritySpecification;
   paths?: PathsMap;
   webhooks?: PathsMap;
-};
+}
 
 export interface PathOperation {
   operationId?: string;
   parameters?: SchemaParameter[];
-  requestBody: any;
+  requestBody: unknown;
   security?: SecuritySpecification;
-  ['x-fastify-config']?: Omit<FastifyRequestContext<FastifyContextConfig>['config'], 'url' | 'method'>;
-};
+  'x-fastify-config'?: Omit<FastifyRequestContext<FastifyContextConfig>['config'], 'url' | 'method'>;
+}
 
 export type Paths = {
   parameters?: SchemaParameter[];
@@ -74,7 +72,7 @@ export interface SchemaParameter {
     type: string;
   };
   in: SchemaParametersIn;
-};
+}
 
 // Parameters handling
 export interface ParsedParameter {
@@ -83,7 +81,7 @@ export interface ParsedParameter {
     [name: string]: {
       type: string;
       description?: string;
-    }
+    };
   };
   required?: string[];
 }
