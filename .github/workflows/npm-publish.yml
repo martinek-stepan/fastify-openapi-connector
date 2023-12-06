@@ -17,10 +17,19 @@ jobs:
         with:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install
-      - run: npm run build
-      - run: npm install -g npm
-      - run: npm ci
-      - run: npm publish --provenance --access public
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Check linting
+        run: npm run lint:ci
+      
+      - name: Build
+        run: npm run build
+        
+      - name: Clean install a project
+        run: npm ci
+      
+      - name: Publish to npm
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
