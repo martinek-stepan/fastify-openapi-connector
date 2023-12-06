@@ -1,5 +1,14 @@
 import { FastifyContextConfig, FastifyRequest, FastifyRequestContext } from 'fastify';
 
+export interface PrefixExtractingSettings {
+  // If defined, will try to find specific server based on url (Top priority)
+  urlRegex?: RegExp;
+  // If defined, will try to find specific server based on description (Second priority)
+  descriptionRegex?: RegExp;
+  // Variable containing prefix, if not defined prefix will be extracted from url behind last /
+  prefixVariable?: string;
+}
+
 export interface Options {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
@@ -11,18 +20,8 @@ export interface Options {
     initializePaths?: boolean;
     // Should routes from webhooks be initialized? Default true
     initializeWebhooks?: boolean;
-    // Prefix for all routes. If defined, overrides prefix defined in OpenAPI servers
-    prefix?: string;
-
-    // If defined plugin will try to extract prefix from OpenAPI servers
-    extractPrefixFromServers?: {
-      // If defined, will try to find specific server based on url (Top priority)
-      urlRegex?: RegExp;
-      // If defined, will try to find specific server based on description (Second priority)
-      descriptionRegex?: RegExp;
-      // Variable containing prefix, if not defined prefix will be extracted from url behind last /
-      prefixVariable?: string;
-    };
+    // Prefix to be used for all routes, either string or object with settings for extracting prefix from servers
+    prefix?: string | PrefixExtractingSettings;
   };
 }
 

@@ -91,15 +91,6 @@ const options: Options = {
 fastify.register(openApiConnectorPlugin, options);
 ```
 
-
-#### Prefix
-Currently the package does not parse servers or accept prefix so if you want to use prefix you can initialize plugin following way
-```ts
-fastify.register(async (instance) => {
-  instance.register(openApiConnectorPlugin, options); 
-}, { prefix: '/v1' });
-```
-
 #### Using yaml spec example
 ```ts
 import { parse } from 'yaml';

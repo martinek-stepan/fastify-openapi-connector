@@ -9,9 +9,9 @@ import { Options } from './types.js';
 const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, { openApiSpecification, securityHandlers, operationHandlers, settings }) => {
   const { components, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
 
-  const prefix = determinePrefix(settings, servers);
+  const prefix = determinePrefix(fastify, settings, servers);
 
-  const register = (fastify: FastifyInstance) => {
+  const setupRoutesAndValidation = async (fastify: FastifyInstance): Promise<void> => {
     registerComponents(fastify, components);
 
     if (settings?.initializePaths !== false && paths) {
@@ -27,11 +27,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, { openApiSpec
     }
   };
 
-  if (prefix) {
-    fastify.register((instance) => register(instance), { prefix });
-  } else {
-    register(fastify);
-  }
+  fastify.register(setupRoutesAndValidation, { prefix });
 };
 
 export const openApiConnectorPlugin = fastifyPlugin(myPluginAsync, {
