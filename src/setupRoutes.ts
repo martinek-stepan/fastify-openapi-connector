@@ -29,12 +29,12 @@ export const setupRoutes = (
       }
     }
 
-    const { parameters, ...methods } = pathObject as Paths;
+    const { parameters, 'x-security': routeSecurity, ...methods } = pathObject as Paths;
 
     const params = parseParams(parameters ?? []);
 
     for (const [method, operation] of Object.entries(methods)) {
-      const { parameters, operationId, requestBody, security, ...operationValues } = operation;
+      const { parameters, operationId, requestBody, security: operationSecurity, ...operationValues } = operation;
 
       if (!operationId) {
         fastify.log.error(`${path} - ${method} is missing operationId! Will be skipped.`);
@@ -52,7 +52,7 @@ export const setupRoutes = (
         config: operationValues['x-fastify-config'],
         schema: createRouteSchema(operationParams, requestBody),
         // Operation security overrides global security
-        preParsing: createSecurityProcessors(routesInfo.securityHandlers ?? {}, security ?? routesInfo.globalSecurity),
+        preParsing: createSecurityProcessors(routesInfo.securityHandlers ?? {}, operationSecurity ?? routeSecurity ?? routesInfo.globalSecurity),
       });
     }
   }

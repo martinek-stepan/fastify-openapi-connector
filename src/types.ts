@@ -82,6 +82,7 @@ export interface PathOperation {
 
 export type Paths = {
   parameters?: SchemaParameter[];
+  'x-security'?: SecuritySpecification;
 } & {
   [method: string]: PathOperation;
 };
