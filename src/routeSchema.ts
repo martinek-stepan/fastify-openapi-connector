@@ -1,7 +1,11 @@
 import { FastifySchema } from 'fastify';
-import { ParsedParameter, SchemaParametersIn } from './types.js';
+import { ParsedParameter, SchemaParametersIn, SpecResponse } from './types.js';
 
-export const createRouteSchema = (params: Record<SchemaParametersIn, ParsedParameter | undefined>, requestBody?: unknown): FastifySchema => {
+export const createRouteSchema = (
+  params: Record<SchemaParametersIn, ParsedParameter | undefined>,
+  requestBody?: unknown,
+  responses?: SpecResponse,
+): FastifySchema => {
   // https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation-and-serialization
   // We only do schema for application/json as that is only one supported for parsing by fastify anyway
   // biome-ignore lint/suspicious/noExplicitAny: There is definition of requestBody, but for our purpuses using dynamic typing is completly fine as we treat everything as optional
@@ -24,6 +28,10 @@ export const createRouteSchema = (params: Record<SchemaParametersIn, ParsedParam
 
   if (params.header) {
     schema.headers = params.header;
+  }
+
+  if (responses) {
+    schema.response = responses;
   }
 
   return schema;

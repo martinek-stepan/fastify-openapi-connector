@@ -24,6 +24,8 @@ export interface Options {
     prefix?: string | PrefixExtractingSettings;
     // Should x-security be used? Default false
     useXSecurity?: boolean;
+    // Should defined responses be validated? Default true
+    validateResponses?: boolean;
   };
 }
 
@@ -73,11 +75,20 @@ export interface OpenAPISpec {
   servers?: ServerObject[];
 }
 
+export interface SpecResponse {
+  [statusCode: string]: {
+    description: string;
+    type?: string;
+    content?: unknown;
+  };
+}
+
 export interface PathOperation {
   operationId?: string;
   parameters?: SchemaParameter[];
   requestBody: unknown;
   security?: SecuritySpecification;
+  responses?: SpecResponse;
   'x-fastify-config'?: Omit<FastifyRequestContext<FastifyContextConfig>['config'], 'url' | 'method'>;
 }
 

@@ -3,7 +3,7 @@ import { createSecurityProcessors } from './createSecurityProcessors.js';
 import { defaultHandler } from './defaultOperationHandler.js';
 import { parseParams } from './parseParams.js';
 import { createRouteSchema } from './routeSchema.js';
-import { OperationHandlersUntyped, Paths, PathsMap, ReferenceObject, SecurityHandlers, SecuritySpecification } from './types.js';
+import { OperationHandlersUntyped, Paths, PathsMap, ReferenceObject, SecurityHandlers, SecuritySpecification, SpecResponse } from './types.js';
 
 // TypeGuard to check extension x-security object fulfills the SecurityObject specification
 export const validateSecurityObject = (security: unknown): security is SecuritySpecification => {
@@ -20,6 +20,22 @@ export const validateSecurityObject = (security: unknown): security is SecurityS
   }
 
   return true;
+}
+
+export const fixEmptyResponses = (responses?: SpecResponse): SpecResponse | undefined => {
+  if (!responses) {
+    return undefined;
+  }
+
+  const copy = structuredClone(responses);
+
+  for (const response of Object.values(copy)) {
+    if (!response.content) {
+      response.type = 'null';
+    }
+  }
+
+  return copy;
 };
 
 export const setupRoutes = (
@@ -67,7 +83,8 @@ export const setupRoutes = (
         continue;
       }
 
-      const { parameters, operationId, requestBody, security: operationSecurity, ...operationValues } = operation;
+      const { parameters, operationId, requestBody, security: operationSecurity, responses, ...operationValues } = operation;
+
 
       if (!operationId) {
         fastify.log.error(`${path} - ${method} is missing operationId! Will be skipped.`);
@@ -88,7 +105,7 @@ export const setupRoutes = (
         url: url.replace(/{(\w+)}/g, ':$1'),
         handler,
         config: operationValues['x-fastify-config'],
-        schema: createRouteSchema(operationParams, requestBody),
+        schema: createRouteSchema(operationParams, requestBody, fixEmptyResponses(responses)),
         // Operation security overrides global security
         preParsing: createSecurityProcessors(routesInfo.securityHandlers ?? {}, operationSecurity ?? routeSecurity ?? routesInfo.globalSecurity),
       });
