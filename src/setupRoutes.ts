@@ -3,7 +3,7 @@ import { createSecurityProcessors } from './createSecurityProcessors.js';
 import { defaultHandler } from './defaultOperationHandler.js';
 import { parseParams } from './parseParams.js';
 import { createRouteSchema } from './routeSchema.js';
-import { OperationHandlers, Paths, PathsMap, ReferenceObject, SecurityHandlers, SecuritySpecification } from './types.js';
+import { OperationHandlersUntyped, Paths, PathsMap, ReferenceObject, SecurityHandlers, SecuritySpecification } from './types.js';
 
 // TypeGuard to check extension x-security object fulfills the SecurityObject specification
 export const validateSecurityObject = (security: unknown): security is SecuritySpecification => {
@@ -25,7 +25,7 @@ export const validateSecurityObject = (security: unknown): security is SecurityS
 export const setupRoutes = (
   fastify: FastifyInstance,
   routesInfo: {
-    operationHandlers: OperationHandlers;
+    operationHandlers: OperationHandlersUntyped;
     paths: PathsMap;
     globalSecurity?: SecuritySpecification;
     securityHandlers?: SecurityHandlers;
@@ -74,6 +74,11 @@ export const setupRoutes = (
         continue;
       }
 
+      let handler = routesInfo.operationHandlers[operationId];
+      if (!handler) {
+        fastify.log.warn(`${path} - ${method} has no handler! Will use default handler.`);
+        handler = defaultHandler;
+      }
       // Overrides any path params already defined
       const operationParams = parseParams(parameters ?? [], structuredClone(params));
 
@@ -81,7 +86,7 @@ export const setupRoutes = (
         method: method.toUpperCase() as HTTPMethods,
         // fastify wants 'path/:param' instead of openapis 'path/{param}'
         url: url.replace(/{(\w+)}/g, ':$1'),
-        handler: routesInfo.operationHandlers[operationId] ?? defaultHandler,
+        handler,
         config: operationValues['x-fastify-config'],
         schema: createRouteSchema(operationParams, requestBody),
         // Operation security overrides global security
