@@ -7,7 +7,7 @@ import { OperationHandlers, Paths, PathsMap, ReferenceObject, SecurityHandlers, 
 
 // TypeGuard to check extension x-security object fulfills the SecurityObject specification
 export const validateSecurityObject = (security: unknown): security is SecuritySpecification => {
-  if (!security || typeof security !== 'object' || !Array.isArray(security)) {
+  if (typeof security !== 'object' || !Array.isArray(security)) {
     return false;
   }
 
@@ -52,7 +52,7 @@ export const setupRoutes = (
     const { parameters, 'x-security': xSecurity, ...methods } = pathObject as Paths;
 
     let routeSecurity: SecuritySpecification | undefined = undefined;
-    if (settings.useXSecurity === true) {
+    if (settings.useXSecurity === true && xSecurity) {
       if (validateSecurityObject(xSecurity)) {
         routeSecurity = xSecurity;
       } else {
