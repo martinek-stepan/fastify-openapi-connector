@@ -12,16 +12,20 @@ export interface PrefixExtractingSettings {
 export interface Options {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
-  operationHandlers: OperationHandlers;
+  operationHandlers: OperationHandlers | OperationHandlersUntyped;
   openApiSpecification: OpenAPISpec;
 
   settings?: {
     // Should routes from paths be initialized? Default true
     initializePaths?: boolean;
-    // Should routes from webhooks be initialized? Default true
+    // Should routes from webhooks be initialized? Default false
     initializeWebhooks?: boolean;
     // Prefix to be used for all routes, either string or object with settings for extracting prefix from servers
     prefix?: string | PrefixExtractingSettings;
+    // Should x-security be used? Default false
+    useXSecurity?: boolean;
+    // Should defined responses be validated? Default true
+    validateResponses?: boolean;
   };
 }
 
@@ -33,8 +37,14 @@ export interface SecurityHandlers {
 }
 
 // Operations handling
+
 export interface OperationHandlers {
   [resolverName: string]: TypedHandlerBase | undefined;
+}
+
+export interface OperationHandlersUntyped {
+  // biome-ignore lint/suspicious/noExplicitAny: Fastify takes any response and serializes it to JSON.
+  [resolverName: string]: ((req: FastifyRequest, reply: FastifyReply) => any) | undefined;
 }
 
 // Open API Specification
@@ -43,7 +53,7 @@ export type SecuritySpecification = {
 }[];
 
 export interface Components {
-  schemas: Record<string, object>;
+  schemas: Record<string, Record<string, unknown>>;
 }
 
 export interface PathsMap {
@@ -70,16 +80,26 @@ export interface OpenAPISpec {
   servers?: ServerObject[];
 }
 
+export interface SpecResponse {
+  [statusCode: string]: {
+    description: string;
+    type?: string;
+    content?: unknown;
+  };
+}
+
 export interface PathOperation {
   operationId?: string;
   parameters?: SchemaParameter[];
   requestBody: unknown;
   security?: SecuritySpecification;
+  responses?: SpecResponse;
   'x-fastify-config'?: Omit<FastifyRequestContext<FastifyContextConfig>['config'], 'url' | 'method'>;
 }
 
 export type Paths = {
   parameters?: SchemaParameter[];
+  'x-security'?: unknown;
 } & {
   [method: string]: PathOperation;
 };

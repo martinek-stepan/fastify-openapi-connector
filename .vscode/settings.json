@@ -1,6 +1,6 @@
 {
   "editor.codeActionsOnSave": {
-    "quickfix.biome": true,
-    "source.addMissingImports": true
+    "quickfix.biome": "explicit",
+    "source.addMissingImports": "explicit"
   }
 }
