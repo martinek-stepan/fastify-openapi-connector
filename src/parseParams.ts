@@ -1,3 +1,4 @@
+import { removeXtensions } from './components.js';
 import { ParsedParameter, SchemaParameter, SchemaParametersIn } from './types.js';
 
 export const parseParams = (
@@ -20,8 +21,11 @@ export const parseParams = (
       properties: {},
     };
 
+    const filteredSchema = structuredClone(item.schema);
+    removeXtensions(filteredSchema);
+
     param.properties[item.name] = {
-      ...item.schema,
+      ...filteredSchema,
       description: item.description,
     };
 

@@ -1,4 +1,4 @@
-import { FastifyContextConfig, FastifyRequest, FastifyRequestContext } from 'fastify';
+import { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext } from 'fastify';
 
 export interface PrefixExtractingSettings {
   // If defined, will try to find specific server based on url (Top priority)
@@ -12,16 +12,18 @@ export interface PrefixExtractingSettings {
 export interface Options {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
-  operationHandlers: OperationHandlers;
+  operationHandlers: OperationHandlersUntyped;
   openApiSpecification: OpenAPISpec;
 
   settings?: {
     // Should routes from paths be initialized? Default true
     initializePaths?: boolean;
-    // Should routes from webhooks be initialized? Default true
+    // Should routes from webhooks be initialized? Default false
     initializeWebhooks?: boolean;
     // Prefix to be used for all routes, either string or object with settings for extracting prefix from servers
     prefix?: string | PrefixExtractingSettings;
+    // Should x-security be used? Default false
+    useXSecurity?: boolean;
     // Should defined responses be validated? Default true
     validateResponses?: boolean;
   };
@@ -35,10 +37,9 @@ export interface SecurityHandlers {
 }
 
 // Operations handling
-// TODO figure out strong typing with inheretance from Fastify Request & Response
-export interface OperationHandlers {
-  // biome-ignore lint/suspicious/noExplicitAny: Before I figure out better way to type this to work with raw Fastify and typed request, we use any
-  [resolverName: string]: (req: any, reply: any) => any | undefined;
+export interface OperationHandlersUntyped {
+  // biome-ignore lint/suspicious/noExplicitAny: Fastify takes any response and serializes it to JSON.
+  [resolverName: string]: ((req: FastifyRequest, reply: FastifyReply) => any) | undefined;
 }
 
 // Open API Specification
@@ -47,7 +48,7 @@ export type SecuritySpecification = {
 }[];
 
 export interface Components {
-  schemas: Record<string, object>;
+  schemas: Record<string, Record<string, unknown>>;
 }
 
 export interface PathsMap {
@@ -93,6 +94,7 @@ export interface PathOperation {
 
 export type Paths = {
   parameters?: SchemaParameter[];
+  'x-security'?: unknown;
 } & {
   [method: string]: PathOperation;
 };

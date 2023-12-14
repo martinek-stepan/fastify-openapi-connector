@@ -31,7 +31,7 @@
   "devDependencies": {
     "@biomejs/biome": "1.4.1",
     "@types/node": "18.x.x",
-    "ts-node": ">=10"
+    "typescript": "5.3.3"
   },
   "keywords": [
     "fastify",

@@ -8,7 +8,13 @@ export const createSecurityProcessors = (handlers: SecurityHandlers, securityObj
   }
 
   return async (req: FastifyRequest, res: FastifyReply) => {
+    let optionalSecurity = false;
     for (const item of securityObject) {
+      if (Object.keys(item).length === 0) {
+        optionalSecurity = true;
+        continue;
+      }
+
       for (const [resolverName, scopes] of Object.entries(item)) {
         const handler = handlers[resolverName];
         if (!handler) {
@@ -26,6 +32,12 @@ export const createSecurityProcessors = (handlers: SecurityHandlers, securityObj
         }
       }
     }
+
+    // Security was optional, so we do not return 401
+    if (optionalSecurity) {
+      return;
+    }
+
     req.log.debug('None of the security objects were succesfully resolver, returning 401');
     res.code(401).send('Unauthorized');
   };
