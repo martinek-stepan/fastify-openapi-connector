@@ -22,6 +22,8 @@ export interface Options {
     initializeWebhooks?: boolean;
     // Prefix to be used for all routes, either string or object with settings for extracting prefix from servers
     prefix?: string | PrefixExtractingSettings;
+    // Should x-security be used? Default false
+    useXSecurity?: boolean;
   };
 }
 
@@ -45,7 +47,7 @@ export type SecuritySpecification = {
 }[];
 
 export interface Components {
-  schemas: Record<string, object>;
+  schemas: Record<string, Record<string, unknown>>;
 }
 
 export interface PathsMap {
@@ -82,7 +84,7 @@ export interface PathOperation {
 
 export type Paths = {
   parameters?: SchemaParameter[];
-  'x-security'?: SecuritySpecification;
+  'x-security'?: unknown;
 } & {
   [method: string]: PathOperation;
 };

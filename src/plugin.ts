@@ -15,11 +15,11 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, { openApiSpec
     registerComponents(fastify, components);
 
     if (settings?.initializePaths !== false && paths) {
-      setupRoutes(fastify, { operationHandlers, paths, globalSecurity, securityHandlers }, false);
+      setupRoutes(fastify, { operationHandlers, paths, globalSecurity, securityHandlers }, { isWebhook: false, useXSecurity: settings?.useXSecurity });
     }
 
     if (settings?.initializeWebhooks !== false && webhooks) {
-      setupRoutes(fastify, { operationHandlers, paths: webhooks, globalSecurity, securityHandlers }, true);
+      setupRoutes(fastify, { operationHandlers, paths: webhooks, globalSecurity, securityHandlers }, { isWebhook: true, useXSecurity: settings?.useXSecurity });
     }
 
     if (!paths && !webhooks) {
