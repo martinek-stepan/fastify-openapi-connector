@@ -62,6 +62,11 @@ export const setupRoutes = (
     const params = parseParams(parameters ?? []);
 
     for (const [method, operation] of Object.entries(methods)) {
+      // Skip extensions
+      if (method.startsWith('x-')) {
+        continue;
+      }
+
       const { parameters, operationId, requestBody, security: operationSecurity, ...operationValues } = operation;
 
       if (!operationId) {
