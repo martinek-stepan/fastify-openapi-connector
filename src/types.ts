@@ -22,6 +22,8 @@ export interface Options {
     initializeWebhooks?: boolean;
     // Prefix to be used for all routes, either string or object with settings for extracting prefix from servers
     prefix?: string | PrefixExtractingSettings;
+    // Should defined responses be validated? Default true
+    validateResponses?: boolean;
   };
 }
 
@@ -72,11 +74,20 @@ export interface OpenAPISpec {
   servers?: ServerObject[];
 }
 
+export interface SpecResponse {
+  [statusCode: string]: {
+    description: string;
+    type?: string;
+    content?: unknown;
+  };
+}
+
 export interface PathOperation {
   operationId?: string;
   parameters?: SchemaParameter[];
   requestBody: unknown;
   security?: SecuritySpecification;
+  responses?: SpecResponse;
   'x-fastify-config'?: Omit<FastifyRequestContext<FastifyContextConfig>['config'], 'url' | 'method'>;
 }
 
