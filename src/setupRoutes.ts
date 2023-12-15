@@ -20,7 +20,7 @@ export const validateSecurityObject = (security: unknown): security is SecurityS
   }
 
   return true;
-}
+};
 
 export const fixEmptyResponses = (responses?: SpecResponse): SpecResponse | undefined => {
   if (!responses) {
@@ -84,7 +84,6 @@ export const setupRoutes = (
       }
 
       const { parameters, operationId, requestBody, security: operationSecurity, responses, ...operationValues } = operation;
-
 
       if (!operationId) {
         fastify.log.error(`${path} - ${method} is missing operationId! Will be skipped.`);
