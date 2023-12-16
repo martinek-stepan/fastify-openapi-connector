@@ -1,0 +1,52 @@
+{
+  "name": "fastify-openapi-connector",
+  "version": "1.0.1",
+  "description": "Fastify plugin that will set-up routes with security & json validation based on OpenAPI specification",
+  "author": "Stepan Martinek",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martinek-stepan/fastify-openapi-connector/tree/main/packages/connector"
+  },
+  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#readme",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "publish:npm": "tsc && npm publish --access public",
+    "format": "biome check --apply ./src",
+    "lint:ci": "biome ci ./src"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "fastify-plugin": "4.x.x"
+  },
+  "peerDependencies": {
+    "fastify": "4.x.x"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.4.1",
+    "@types/node": "18.x.x",
+    "typescript": "5.3.3"
+  },
+  "keywords": [
+    "fastify",
+    "openapi",
+    "specification",
+    "3.1",
+    "connector",
+    "glue",
+    "routes",
+    "security",
+    "validation",
+    "ajv",
+    "json-schema",
+    "typescript",
+    "esm",
+    "module"
+  ]
+}
