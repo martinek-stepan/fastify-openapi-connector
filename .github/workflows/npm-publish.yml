@@ -18,22 +18,24 @@ jobs:
           node-version: '18.x'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Go to subdir
-        run: cd packages/connector
-
       - name: Install dependencies
         run: npm install
+        working-directory: ./packages/connector
       
       - name: Check linting
         run: npm run lint:ci
+        working-directory: ./packages/connector
       
       - name: Build
         run: npm run build
+        working-directory: ./packages/connector
         
       - name: Clean install a project
         run: npm ci
+        working-directory: ./packages/connector
       
       - name: Publish to npm
         run: npm publish --provenance --access public
+        working-directory: ./packages/connector
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
