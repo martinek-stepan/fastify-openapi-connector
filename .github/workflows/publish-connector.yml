@@ -8,7 +8,11 @@ on:
       - 'biome.json'
       - '.github/workflows/publish-connector.yml'
       - '.github/workflows/npm-publish-reusable.yml'
-
+      
+permissions:
+  contents: read
+  id-token: write
+  
 jobs:
   call-publishing-workflow:
     uses: ./.github/workflows/npm-publish-reusable.yml
