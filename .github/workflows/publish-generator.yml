@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/generator/**'
       - 'biome.json'
+      - '.github/workflows/publish-generator.yml'
 
 jobs:
   call-publishing-workflow:

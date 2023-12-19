@@ -6,6 +6,7 @@ on:
     paths:
       - 'packages/connector/**'
       - 'biome.json'
+      - '.github/workflows/publish-connector.yml'
 
 jobs:
   call-publishing-workflow:
