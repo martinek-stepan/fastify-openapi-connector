@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { bundle, createConfig } from '@redocly/openapi-core';
 import parser from 'yargs-parser';
 import { OpenAPISpec, generate } from './generator.js';
