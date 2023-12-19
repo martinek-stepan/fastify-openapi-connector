@@ -12,11 +12,16 @@
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
-    "lineWidth": 160
+    "lineWidth": 140
   },
   "javascript": {
     "formatter": {
       "quoteStyle": "single"
+    }
+  },
+  "json": {
+    "formatter": {
+      "enabled": false
     }
   }
 }

@@ -1,12 +1,10 @@
 name: Publish Package to npmjs
 on:
-  push:
-    branches:
-      - main
-      
-permissions:
-  contents: read
-  id-token: write
+  workflow_call:
+    inputs:
+      directory:
+        required: true
+        type: string
 
 jobs:
   publish:
@@ -20,22 +18,22 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./packages/connector
+        working-directory: ${{ inputs.directory }}
       
       - name: Check linting
         run: npm run lint:ci
-        working-directory: ./packages/connector
+        working-directory: ${{ inputs.directory }}
       
       - name: Build
         run: npm run build
-        working-directory: ./packages/connector
+        working-directory: ${{ inputs.directory }}
         
       - name: Clean install a project
         run: npm ci
-        working-directory: ./packages/connector
+        working-directory: ${{ inputs.directory }}
       
       - name: Publish to npm
         run: npm publish --provenance --access public
-        working-directory: ./packages/connector
+        working-directory: ${{ inputs.directory }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

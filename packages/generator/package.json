@@ -1,0 +1,55 @@
+{
+  "name": "fastify-openapi-connector-generator",
+  "version": "0.1.0",
+  "description": "Complimentary CLI tool for fastify-openapi-connector package. It generates prefabricates for handlers from OpenAPI specification.",
+  "author": "Stepan Martinek",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/martinek-stepan/fastify-openapi-connector/tree/main/packages/connector"
+  },
+  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#readme",
+  "license": "MIT",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "fastify-openapi-connector-generator": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "publish:npm": "tsc && npm publish --access public",
+    "format": "biome check --apply ./src",
+    "lint:ci": "biome ci ./src"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@redocly/openapi-core": "1.5.0",
+    "fastify-openapi-connector": "1.x.x",
+    "glob": "10.3.10",
+    "yargs-parser": "^21.1.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.4.1",
+    "@types/node": "18.x.x",
+    "@types/yargs-parser": "^21.0.3",
+    "typescript": "5.3.3",
+    "ts-node": "10.9.2"
+  },
+  "keywords": [
+    "fastify",
+    "openapi",
+    "specification",
+    "3.1",
+    "routes",
+    "security",
+    "validation",
+    "typescript",
+    "esm",
+    "module",
+    "generator",
+    "typed"
+  ]
+}
