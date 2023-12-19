@@ -1,9 +1,10 @@
-import { FastifyInstance, HTTPMethods } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { createSecurityProcessors } from './createSecurityProcessors.js';
 import { defaultHandler } from './defaultOperationHandler.js';
 import { parseParams } from './parseParams.js';
 import { createRouteSchema } from './routeSchema.js';
 import {
+  OperationHandlers,
   OperationHandlersUntyped,
   Paths,
   PathsMap,
@@ -49,7 +50,7 @@ export const fixEmptyResponses = (responses?: SpecResponse): SpecResponse | unde
 export const setupRoutes = (
   fastify: FastifyInstance,
   routesInfo: {
-    operationHandlers: OperationHandlersUntyped;
+    operationHandlers: OperationHandlersUntyped | OperationHandlers;
     paths: PathsMap;
     globalSecurity?: SecuritySpecification;
     securityHandlers?: SecurityHandlers;
@@ -98,7 +99,8 @@ export const setupRoutes = (
         continue;
       }
 
-      let handler = routesInfo.operationHandlers[operationId];
+      // It is safe to retype since, TypedRequest & TypedReply are FastifyRequest & FastifyReply with generic parameters.
+      let handler = routesInfo.operationHandlers[operationId] as (req: FastifyRequest, rep: FastifyReply) => unknown;
       if (!handler) {
         fastify.log.warn(`${path} - ${method} has no handler! Will use default handler.`);
         handler = defaultHandler;
