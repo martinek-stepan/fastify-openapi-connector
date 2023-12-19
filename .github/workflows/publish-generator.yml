@@ -1,0 +1,15 @@
+name: Publish Generator to npmjs
+on:
+  push:
+    branches:
+      - main      
+    paths:
+      - 'packages/generator/**'
+      - 'biome.json'
+
+jobs:
+  call-publishing-workflow:
+    uses: ./.github/workflows/npm-publish-reusable.yml
+    secrets: inherit
+    with:
+      directory: ./packages/generator
