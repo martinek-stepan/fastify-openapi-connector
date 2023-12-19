@@ -12,7 +12,7 @@ export interface PrefixExtractingSettings {
 export interface Options {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
-  operationHandlers: OperationHandlersUntyped;
+  operationHandlers: OperationHandlers | OperationHandlersUntyped;
   openApiSpecification: OpenAPISpec;
 
   settings?: {
@@ -37,6 +37,10 @@ export interface SecurityHandlers {
 }
 
 // Operations handling
+export interface OperationHandlers {
+  [resolverName: string]: TypedHandlerBase | undefined;
+}
+
 export interface OperationHandlersUntyped {
   // biome-ignore lint/suspicious/noExplicitAny: Fastify takes any response and serializes it to JSON.
   [resolverName: string]: ((req: FastifyRequest, reply: FastifyReply) => any) | undefined;
@@ -127,4 +131,40 @@ export interface ReferenceObject {
   $ref: string;
   summary?: string;
   description?: string;
+}
+
+// biome-ignore lint/suspicious/noExplicitAny: We want dynamic type here, to do some typescript magic
+type OperationWithParams = { parameters: any };
+// biome-ignore lint/suspicious/noExplicitAny: We want dynamic type here, to do some typescript magic
+type OperationWithBody = { requestBody: any };
+// biome-ignore lint/suspicious/noExplicitAny: We want dynamic type here, to do some typescript magic
+type OperationWithResponse = { responses: any };
+
+// First argument is interface with operations, second is name of operation we want to get request type for
+export type TypedRequestBase<Ops, T extends keyof Ops> = FastifyRequest<{
+  // TypeScript magic, if operation has path parameters, we set them as type, otherwise we set never
+  Params: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['path'] : never;
+  // TypeScript magic, if operation has query parameters, we set them as type, otherwise we set never
+  Querystring: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['query'] : never;
+  // TypeScript magic, if operation has requestBody with content application/json (fastify explicitly validate only this type), we set it as type, otherwise we set never
+  Body: Ops[T] extends OperationWithBody ? Ops[T]['requestBody']['content']['application/json'] : never;
+}>;
+
+/** First argument is interface with operations, second is name of operation we want to get response type for
+ * As what ever you retunr in fastify will be treated as 200 response, we want to restrict this to only valid responses
+ * If operation has 200 response with content application/json, we set it as type (or FastifyReply), otherwise we set FastifyReply
+ * That way we can wither return strongly typed response or just FastifyReply where we can set any additional information like code, headers, etc.
+ */
+export type TypedResponseBase<Ops, T extends keyof Ops> = Ops[T] extends OperationWithResponse
+  ? Promise<FastifyReply | Ops[T]['responses']['200']['content']['application/json']>
+  : Promise<FastifyReply>;
+
+/**
+ * Base type for operation handlers functions
+ * !!! IMPORTANT !!!
+ * As TypeScript does not enforce return type of function (but provides suggestions) you should define your handles as follows:
+ * `const myHandler: TypedHandlerBase = (req, reply): TypedResponseBase<Ops, T> => {`
+ */
+export interface TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops> {
+  (req: TypedRequestBase<Ops, T>, reply: FastifyReply): TypedResponseBase<Ops, T>;
 }
