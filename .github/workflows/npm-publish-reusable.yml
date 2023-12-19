@@ -5,6 +5,10 @@ on:
       directory:
         required: true
         type: string
+    secrets:
+      NPM_TOKEN:
+        description: "NPM Token"
+        required: true
       
 permissions:
   contents: read

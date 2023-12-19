@@ -7,6 +7,7 @@ on:
       - 'packages/generator/**'
       - 'biome.json'
       - '.github/workflows/publish-generator.yml'
+      - '.github/workflows/npm-publish-reusable.yml'
 
 jobs:
   call-publishing-workflow:
