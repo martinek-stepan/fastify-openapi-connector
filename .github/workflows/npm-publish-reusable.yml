@@ -5,6 +5,10 @@ on:
       directory:
         required: true
         type: string
+      
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   publish:
