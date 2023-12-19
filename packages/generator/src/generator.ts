@@ -217,7 +217,10 @@ const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTy
     return;
   }
 
-  const relative = path.relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js'))).replace(/\\/g, '/');
+  const relative = path
+    .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js')))
+    .replace(/\\/g, '/')
+    .replace(/^(?!\.\.?\/)/, './');
   const content = `import { TypedRequestBase, TypedResponseBase, TypedHandlerBase } from 'fastify-openapi-connector';
 import { operations } from '${relative}';
 
