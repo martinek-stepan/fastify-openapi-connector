@@ -19,7 +19,7 @@ type TemplateFunction = (imp: string, typesPath: string) => string;
 
 const routeTemplateTyped: TemplateFunction = (imp: string, typesPath: string) => `import { TypedHandler, TypedResponse } from '${typesPath}';
 
-export const ${imp}: TypedHandler<'${imp}'> = (req, reply): TypedResponse<'${imp}'> => {
+export const ${imp}: TypedHandler<'${imp}'> = async (req, reply): TypedResponse<'${imp}'> => {
   return reply.code(501).send("Not Implemented");
 }
 `;
