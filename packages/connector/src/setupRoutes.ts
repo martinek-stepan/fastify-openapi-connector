@@ -3,7 +3,15 @@ import { createSecurityProcessors } from './createSecurityProcessors.js';
 import { defaultHandler } from './defaultOperationHandler.js';
 import { parseParams } from './parseParams.js';
 import { createRouteSchema } from './routeSchema.js';
-import { OperationHandlersUntyped, Paths, PathsMap, ReferenceObject, SecurityHandlers, SecuritySpecification, SpecResponse } from './types.js';
+import {
+  OperationHandlersUntyped,
+  Paths,
+  PathsMap,
+  ReferenceObject,
+  SecurityHandlers,
+  SecuritySpecification,
+  SpecResponse,
+} from './types.js';
 
 // TypeGuard to check extension x-security object fulfills the SecurityObject specification
 export const validateSecurityObject = (security: unknown): security is SecuritySpecification => {
@@ -106,7 +114,10 @@ export const setupRoutes = (
         config: operationValues['x-fastify-config'],
         schema: createRouteSchema(operationParams, requestBody, fixEmptyResponses(responses)),
         // Operation security overrides global security
-        preParsing: createSecurityProcessors(routesInfo.securityHandlers ?? {}, operationSecurity ?? routeSecurity ?? routesInfo.globalSecurity),
+        preParsing: createSecurityProcessors(
+          routesInfo.securityHandlers ?? {},
+          operationSecurity ?? routeSecurity ?? routesInfo.globalSecurity,
+        ),
       });
     }
   }

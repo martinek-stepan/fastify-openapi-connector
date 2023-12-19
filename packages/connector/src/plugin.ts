@@ -6,7 +6,10 @@ import { setupRoutes } from './setupRoutes.js';
 import { Options } from './types.js';
 
 // define plugin using promises
-const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, { openApiSpecification, securityHandlers, operationHandlers, settings }) => {
+const myPluginAsync: FastifyPluginAsync<Options> = async (
+  fastify,
+  { openApiSpecification, securityHandlers, operationHandlers, settings },
+) => {
   const { components, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
 
   const prefix = determinePrefix(fastify, settings, servers);
@@ -15,11 +18,19 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (fastify, { openApiSpec
     registerComponents(fastify, components);
 
     if (settings?.initializePaths !== false && paths) {
-      setupRoutes(fastify, { operationHandlers, paths, globalSecurity, securityHandlers }, { isWebhook: false, useXSecurity: settings?.useXSecurity });
+      setupRoutes(
+        fastify,
+        { operationHandlers, paths, globalSecurity, securityHandlers },
+        { isWebhook: false, useXSecurity: settings?.useXSecurity },
+      );
     }
 
     if (settings?.initializeWebhooks === true && webhooks) {
-      setupRoutes(fastify, { operationHandlers, paths: webhooks, globalSecurity, securityHandlers }, { isWebhook: true, useXSecurity: settings?.useXSecurity });
+      setupRoutes(
+        fastify,
+        { operationHandlers, paths: webhooks, globalSecurity, securityHandlers },
+        { isWebhook: true, useXSecurity: settings?.useXSecurity },
+      );
     }
 
     if (!paths && !webhooks) {
