@@ -52,7 +52,7 @@ export type SecuritySpecification = {
 }[];
 
 export interface Components {
-  schemas: Record<string, Record<string, unknown>>;
+  schemas?: Record<string, Record<string, unknown>>;
 }
 
 export interface PathsMap {

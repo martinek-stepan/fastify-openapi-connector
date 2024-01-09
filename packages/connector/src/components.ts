@@ -23,7 +23,7 @@ export const removeXtensions = (obj: unknown) => {
 };
 
 export const registerComponents = (fastify: FastifyInstance, components?: Components) => {
-  if (!components) {
+  if (!components?.schemas) {
     return;
   }
 
