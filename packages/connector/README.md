@@ -29,12 +29,15 @@ Bugreports & pull requests are welcome!
 
 This library is heavily inspired by [fastify-openapi-glue](https://www.npmjs.com/package/fastify-openapi-glue) which I recommend if you need the suports of older versions of OpenAPI. So props to the author!
 
-Main reason for creating this library were issues I had running my API with ts-node/esm loader.
+Main reason for creating that library were issues I had running my API with ts-node/esm loader.
 
 
 ## Usage
 
 The package is designed to have minimal dependencies (`fastify-plugin` + `fastify` as peer dependecy) and give user as much freedom as possible.
+
+### Generator
+I suggest using companion package [fastify-openapi-connector-generator](https://www.npmjs.com/package/fastify-openapi-connector-generator) to generate handlers & types.
 
 ### Plugin Options
 
@@ -43,7 +46,7 @@ To initialize fastify plugin, following Options object is expected:
 interface Options
 {
   securityHandlers?: SecurityHandlers;
-  operationHandlers: OperationHandlers;
+  operationHandlers: OperationHandlers | OperationHandlersUntyped;
   openApiSpecification: OpenAPISpec;
 }
 ```
@@ -53,13 +56,23 @@ As this package does not dictate user which serialization method to use with the
 The `OpenAPISpec` type is not full OpenAPI specification typed, since that include lot of dynamic fields. 
 
 #### Operation Handlers
-**Required** property `operationHandlers` is defined as:
+**Required** property `operationHandlers` is accept either untyped (default Fastify handler) defined as:
 ```ts
-export interface OperationHandlers
+export interface OperationHandlersUntyped
 {
   [resolverName: string]: ((req: FastifyRequest, reply: FastifyReply) => any) | undefined;
 }
 ```
+
+or typed handlers, which with utilization of some TypeScript magic and `openapi-typescript` package, define handler with strong type (FastifyRequest & FastifyReply that include the Generics based on type defined in spec):
+```ts
+export interface OperationHandlers {
+  [resolverName: string]: TypedHandlerBase | undefined;
+}
+```
+If you want to know more, check the [types.ts](https://github.com/martinek-stepan/fastify-openapi-connector/blob/main/packages/connector/src/types.ts) file & documentation in helper packages [fastify-openapi-connector-generator](https://github.com/martinek-stepan/fastify-openapi-connector/blob/main/packages/generator/README.md).
+
+
 It is expected that you pass map of Fastify handlers with `operationId` from specification as key.
 
 If handler for operation is missing, default handler which logs error and returns `501` is set-up & warning is shown on initialization. 

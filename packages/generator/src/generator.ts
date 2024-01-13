@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, writeFileSync } from 'fs';
 import path from 'path';
 import { glob } from 'glob';
 
-interface PathsObject {
+export interface PathsObject {
   // biome-ignore lint/suspicious/noExplicitAny: It can be any
   [method: string]: any;
 }
@@ -15,30 +15,33 @@ export interface OpenAPISpec {
   webhooks?: PathsObject;
 }
 
-type TemplateFunction = (imp: string, typesPath: string) => string;
+export type TemplateFunction = (imp: string, typesPath: string) => string;
 
-const routeTemplateTyped: TemplateFunction = (imp: string, typesPath: string) => `import { TypedHandler, TypedResponse } from '${typesPath}';
+export const routeTemplateTyped: TemplateFunction = (
+  imp: string,
+  typesPath: string,
+) => `import { TypedHandler, TypedResponse } from '${typesPath}';
 
 export const ${imp}: TypedHandler<'${imp}'> = async (req, reply): TypedResponse<'${imp}'> => {
   return reply.code(501).send("Not Implemented");
 }
 `;
 
-const routeTemplateUntyped: TemplateFunction = (imp: string, _: string) => `import { FastifyReply, FastifyRequest } from 'fastify';
+export const routeTemplateUntyped: TemplateFunction = (imp: string, _: string) => `import { FastifyReply, FastifyRequest } from 'fastify';
 
 export const ${imp} = (req: FastifyRequest, reply: FastifyReply): any => {
   return reply.code(501).send("Not Implemented");
 }
 `;
 
-const securityTemplate = (name: string) => `import { FastifyRequest } from 'fastify';
+export const securityTemplate = (name: string) => `import { FastifyRequest } from 'fastify';
   
 export const ${name} = (req: FastifyRequest, scopes?: string[]): boolean | Promise<boolean> => {
   return false;
 }
 `;
 
-const parseAndGenerateOperationHandlers = async (args: {
+export const parseAndGenerateOperationHandlers = async (args: {
   paths: PathsObject;
   filesPath: string;
   typesPath: string;
@@ -73,7 +76,7 @@ const parseAndGenerateOperationHandlers = async (args: {
   return operationIds;
 };
 
-const parseAndGenerateSecurity = async (args: {
+export const parseAndGenerateSecurity = async (args: {
   security: Record<string, unknown>;
   filesPath: string;
 }): Promise<string[]> => {
@@ -150,7 +153,7 @@ export const generate = async (args: {
   console.log('DONE!');
 };
 
-const generateHandlerFiles = async (args: {
+export const generateHandlerFiles = async (args: {
   handlerNames: string[];
   path: string;
   typesPath: string;
@@ -181,7 +184,7 @@ const generateHandlerFiles = async (args: {
   }
 };
 
-const generateHandlerImports = (args: { handlerNames: string[]; path: string; servicePath: string }) => {
+export const generateHandlerImports = (args: { handlerNames: string[]; path: string; servicePath: string }) => {
   return args.handlerNames.map((name) => {
     const handlerPath = path.relative(path.resolve(args.servicePath, '..'), path.resolve(args.path));
     const importPath = path
@@ -192,14 +195,14 @@ const generateHandlerImports = (args: { handlerNames: string[]; path: string; se
   });
 };
 
-interface OrganizedHandlers {
+export interface OrganizedHandlers {
   path?: string;
   handlers?: string[];
   exportName: string;
   typeName: string;
 }
 
-const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers) => {
+export const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers) => {
   if (!a.path) {
     return -1;
   }
@@ -211,7 +214,7 @@ const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers) => {
   return a.path > b.path ? 1 : b.path > a.path ? -1 : 0;
 };
 
-const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTypesFile: boolean) => {
+export const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTypesFile: boolean) => {
   if (existsSync(typesFilePath) && !overrideTypesFile) {
     console.log('Types file already exists. Skipping generation.');
     return;
@@ -232,7 +235,7 @@ export type TypedHandler<T extends keyof operations> = TypedHandlerBase<operatio
   writeFileSync(typesFilePath, content);
 };
 
-const generateServiceFile = (args: {
+export const generateServiceFile = (args: {
   pathHandlerNames?: string[];
   webhookHandlerNames?: string[];
   securityHandlerNames?: string[];

@@ -1,13 +1,13 @@
 {
   "name": "fastify-openapi-connector-generator",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "description": "Complimentary CLI tool for fastify-openapi-connector package. It generates prefabricates for handlers from OpenAPI specification.",
   "author": "Stepan Martinek",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/martinek-stepan/fastify-openapi-connector/tree/main/packages/connector"
+    "url": "git+https://github.com/martinek-stepan/fastify-openapi-connector"
   },
-  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector#readme",
+  "homepage": "https://github.com/martinek-stepan/fastify-openapi-connector/tree/main/packages/generator#readme",
   "license": "MIT",
   "private": false,
   "type": "module",
