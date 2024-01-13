@@ -155,9 +155,11 @@ export type TypedRequestBase<Ops, T extends keyof Ops> = FastifyRequest<{
  * If operation has 200 response with content application/json, we set it as type (or FastifyReply), otherwise we set FastifyReply
  * That way we can wither return strongly typed response or just FastifyReply where we can set any additional information like code, headers, etc.
  */
-export type TypedResponseBase<Ops, T extends keyof Ops> = Ops[T] extends OperationWithResponse
-  ? Promise<FastifyReply | Ops[T]['responses']['200']['content']['application/json']>
-  : Promise<FastifyReply>;
+export type TypedResponseBaseSync<Ops, T extends keyof Ops> = Ops[T] extends OperationWithResponse
+  ? FastifyReply | Ops[T]['responses']['200']['content']['application/json']
+  : FastifyReply;
+
+export type TypedResponseBase<Ops, T extends keyof Ops> = TypedResponseBaseSync<Ops, T> | Promise<TypedResponseBaseSync<Ops, T>>;
 
 /**
  * Base type for operation handlers functions
