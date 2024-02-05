@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import type{ Components } from './types.js';
+import type { Components } from './types.js';
 
 export const removeXtensions = (obj: unknown) => {
   if (typeof obj !== 'object' || obj == null) {

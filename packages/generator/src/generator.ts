@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import { glob } from 'glob';
 import path from 'path';
+import { glob } from 'glob';
 
 export interface PathsObject {
   // biome-ignore lint/suspicious/noExplicitAny: It can be any
