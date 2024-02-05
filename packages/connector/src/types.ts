@@ -158,6 +158,7 @@ export type TypedRequestBase<Ops, T extends keyof Ops> = FastifyRequest<{
 export type TypedResponseBaseSync<Ops, T extends keyof Ops> = Ops[T] extends OperationWithResponse
   ? FastifyReply | Ops[T]['responses']['200']['content']['application/json']
   : FastifyReply;
+export type TypedResponseBaseAsync<Ops, T extends keyof Ops> = Promise<TypedResponseBaseSync<Ops, T>>;
 
 export type TypedResponseBase<Ops, T extends keyof Ops> = TypedResponseBaseSync<Ops, T> | Promise<TypedResponseBaseSync<Ops, T>>;
 
