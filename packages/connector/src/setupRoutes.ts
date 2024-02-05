@@ -1,9 +1,9 @@
-import { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
+import type { FastifyInstance, FastifyReply, FastifyRequest, HTTPMethods } from 'fastify';
 import { createSecurityProcessors } from './createSecurityProcessors.js';
 import { defaultHandler } from './defaultOperationHandler.js';
 import { parseParams } from './parseParams.js';
 import { createRouteSchema } from './routeSchema.js';
-import {
+import type {
   OperationHandlers,
   OperationHandlersUntyped,
   Paths,

@@ -1,5 +1,5 @@
-import { FastifyInstance } from 'fastify';
-import { Options, ServerObject } from './types.js';
+import type { FastifyInstance } from 'fastify';
+import type { Options, ServerObject } from './types.js';
 
 export const determinePrefix = (instance: FastifyInstance, settings: Options['settings'], servers?: ServerObject[]): string | undefined => {
   if (typeof settings?.prefix === 'string') {

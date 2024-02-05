@@ -1,5 +1,5 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { SecurityHandlers, SecuritySpecification } from './types.js';
+import type { FastifyReply, FastifyRequest } from 'fastify';
+import type { SecurityHandlers, SecuritySpecification } from './types.js';
 
 export const createSecurityProcessors = (handlers: SecurityHandlers, securityObject?: SecuritySpecification) => {
   // No security, or empty array means we do not validate

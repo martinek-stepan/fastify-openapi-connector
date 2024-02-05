@@ -1,9 +1,9 @@
-import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
 import { registerComponents } from './components.js';
 import { determinePrefix } from './determinePrefix.js';
 import { setupRoutes } from './setupRoutes.js';
-import { Options } from './types.js';
+import type { Options } from './types.js';
 
 // define plugin using promises
 const myPluginAsync: FastifyPluginAsync<Options> = async (

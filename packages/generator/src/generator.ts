@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import path from 'path';
 import { glob } from 'glob';
+import path from 'path';
 
 export interface PathsObject {
   // biome-ignore lint/suspicious/noExplicitAny: It can be any
@@ -224,8 +224,8 @@ export const generateTypesFile = (typesFilePath: string, schemaPath: string, ove
     .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js')))
     .replace(/\\/g, '/')
     .replace(/^(?!\.\.?\/)/, './');
-  const content = `import { TypedRequestBase, TypedResponseBase, TypedHandlerBase } from 'fastify-openapi-connector';
-import { operations } from '${relative}';
+  const content = `import type { TypedRequestBase, TypedResponseBase, TypedHandlerBase } from 'fastify-openapi-connector';
+import type { operations } from '${relative}';
 
 export type TypedRequest<T extends keyof operations> = TypedRequestBase<operations, T>;  
 export type TypedResponse<T extends keyof operations> = TypedResponseBase<operations, T>;
@@ -293,7 +293,7 @@ ${handlers.map((name) => `  ${name}`).join(',\n')},
   }
 
   if (typeImports.size > 0) {
-    imports.push(`import { ${Array.from(typeImports).join(', ')} } from 'fastify-openapi-connector';`);
+    imports.unshift(`import type { ${Array.from(typeImports).join(', ')} } from 'fastify-openapi-connector';`);
   }
 
   serviceTs += `${imports.join('\n')}\n\n`;

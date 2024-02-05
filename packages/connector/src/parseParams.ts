@@ -1,5 +1,5 @@
 import { removeXtensions } from './components.js';
-import { ParsedParameter, SchemaParameter, SchemaParametersIn } from './types.js';
+import type { ParsedParameter, SchemaParameter, SchemaParametersIn } from './types.js';
 
 export const parseParams = (
   data: SchemaParameter[],

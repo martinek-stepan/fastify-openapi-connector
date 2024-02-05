@@ -1,4 +1,4 @@
-import { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext } from 'fastify';
+import type { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext } from 'fastify';
 
 export interface PrefixExtractingSettings {
   // If defined, will try to find specific server based on url (Top priority)

@@ -1,6 +1,6 @@
 {
   "name": "fastify-openapi-connector-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Complimentary CLI tool for fastify-openapi-connector package. It generates prefabricates for handlers from OpenAPI specification.",
   "author": "Stepan Martinek",
   "repository": {

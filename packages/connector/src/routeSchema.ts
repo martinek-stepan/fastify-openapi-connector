@@ -1,5 +1,5 @@
-import { FastifySchema } from 'fastify';
-import { ParsedParameter, SchemaParametersIn, SpecResponse } from './types.js';
+import type { FastifySchema } from 'fastify';
+import type { ParsedParameter, SchemaParametersIn, SpecResponse } from './types.js';
 
 export const createRouteSchema = (
   params: Record<SchemaParametersIn, ParsedParameter | undefined>,
