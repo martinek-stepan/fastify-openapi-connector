@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { bundle, createConfig } from '@redocly/openapi-core';
 import parser from 'yargs-parser';
-import { generate, type OpenAPISpec } from './generator.js';
+import { type OpenAPISpec, generate } from './generator.js';
 
 const HELP = `Usage
  $ fastify-openapi-connector-generator [options]
