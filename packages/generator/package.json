@@ -1,6 +1,6 @@
 {
   "name": "fastify-openapi-connector-generator",
-  "version": "1.0.3",
+  "version": "1.1.1",
   "description": "Complimentary CLI tool for fastify-openapi-connector package. It generates prefabricates for handlers from OpenAPI specification.",
   "author": "Stepan Martinek",
   "repository": {
@@ -14,7 +14,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "fastify-openapi-connector-generator": "dist/cli.js"
+    "fastify-oas-generator": "dist/cli.js"
   },
   "scripts": {
     "build": "tsc",

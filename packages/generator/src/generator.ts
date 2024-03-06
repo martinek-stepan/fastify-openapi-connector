@@ -1,12 +1,18 @@
-import { existsSync, mkdirSync, writeFileSync } from 'fs';
-import path from 'path';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { glob } from 'glob';
 
+/**
+ * OAS Paths object
+ */
 export interface PathsObject {
   // biome-ignore lint/suspicious/noExplicitAny: It can be any
   [method: string]: any;
 }
 
+/**
+ * OAS object
+ */
 export interface OpenAPISpec {
   components?: {
     securitySchemes?: Record<string, unknown>;
@@ -15,8 +21,16 @@ export interface OpenAPISpec {
   webhooks?: PathsObject;
 }
 
+/**
+ * Type of function that generates a file
+ */
 export type TemplateFunction = (imp: string, typesPath: string) => string;
 
+/**
+ * Function to generate handler files
+ * @param imp operationId
+ * @param typesPath path to types file
+ */
 export const routeTemplateTyped: TemplateFunction = (
   imp: string,
   typesPath: string,
@@ -27,6 +41,11 @@ export const ${imp}: TypedHandler<'${imp}'> = async (req, reply): TypedResponse<
 }
 `;
 
+/**
+ * Function to generate untyped handler files
+ * @param imp operationId
+ * @param typesPath not used
+ */
 export const routeTemplateUntyped: TemplateFunction = (imp: string, _: string) => `import { FastifyReply, FastifyRequest } from 'fastify';
 
 export const ${imp} = (req: FastifyRequest, reply: FastifyReply): any => {
@@ -34,13 +53,22 @@ export const ${imp} = (req: FastifyRequest, reply: FastifyReply): any => {
 }
 `;
 
-export const securityTemplate = (name: string) => `import { FastifyRequest } from 'fastify';
+/**
+ * Function to generate security files
+ * @param name security name
+ */
+export const securityTemplate = (name: string): string => `import { FastifyRequest } from 'fastify';
   
 export const ${name} = (req: FastifyRequest, scopes?: string[]): boolean | Promise<boolean> => {
   return false;
 }
 `;
 
+/**
+ * Function to generate handler files
+ * @param args setup arguments
+ * @returns operationIds
+ */
 export const parseAndGenerateOperationHandlers = async (args: {
   paths: PathsObject;
   filesPath: string;
@@ -76,6 +104,11 @@ export const parseAndGenerateOperationHandlers = async (args: {
   return operationIds;
 };
 
+/**
+ * Function to generate security files
+ * @param args setup arguments
+ * @returns security hander names
+ */
 export const parseAndGenerateSecurity = async (args: {
   security: Record<string, unknown>;
   filesPath: string;
@@ -100,6 +133,10 @@ export const parseAndGenerateSecurity = async (args: {
   return securityNames;
 };
 
+/**
+ * Entry point function that generates the service and handler files
+ * @param args Setup arguments
+ */
 export const generate = async (args: {
   routesPath?: string;
   servicePath: string;
@@ -110,7 +147,7 @@ export const generate = async (args: {
   schemaFilePath: string;
   typed: boolean;
   overrideTypesFile: boolean;
-}) => {
+}): Promise<void> => {
   let pathOperationIds: string[] | undefined;
   let webhookOperationIds: string[] | undefined;
   let securityNames: string[] | undefined;
@@ -153,12 +190,16 @@ export const generate = async (args: {
   console.log('DONE!');
 };
 
+/**
+ * Function to generate handler files
+ * @param args setup arguments
+ */
 export const generateHandlerFiles = async (args: {
   handlerNames: string[];
   path: string;
   typesPath: string;
   templateFunction: TemplateFunction;
-}) => {
+}): Promise<void> => {
   if (!existsSync(args.path)) {
     mkdirSync(args.path, { recursive: true });
   }
@@ -184,7 +225,12 @@ export const generateHandlerFiles = async (args: {
   }
 };
 
-export const generateHandlerImports = (args: { handlerNames: string[]; path: string; servicePath: string }) => {
+/**
+ * Function to generate handler imports
+ * @param args setup arguments
+ * @returns handler imports
+ */
+export const generateHandlerImports = (args: { handlerNames: string[]; path: string; servicePath: string }): string[] => {
   return args.handlerNames.map((name) => {
     const handlerPath = path.relative(path.resolve(args.servicePath, '..'), path.resolve(args.path));
     const importPath = path
@@ -195,6 +241,9 @@ export const generateHandlerImports = (args: { handlerNames: string[]; path: str
   });
 };
 
+/**
+ * Helper interface for sorting handlers
+ */
 export interface OrganizedHandlers {
   path?: string;
   handlers?: string[];
@@ -202,7 +251,13 @@ export interface OrganizedHandlers {
   typeName: string;
 }
 
-export const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers) => {
+/**
+ * Sort handlers function, sorting based on path
+ * @param a
+ * @param b
+ * @returns -1/0/1
+ */
+export const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers): number => {
   if (!a.path) {
     return -1;
   }
@@ -214,7 +269,14 @@ export const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers) => {
   return a.path > b.path ? 1 : b.path > a.path ? -1 : 0;
 };
 
-export const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTypesFile: boolean) => {
+/**
+ * Generets types file
+ * @param typesFilePath Path where to generate
+ * @param schemaPath  Path to schema file
+ * @param overrideTypesFile Indicates that types file should be overrided if exists
+ * @returns
+ */
+export const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTypesFile: boolean): void => {
   if (existsSync(typesFilePath) && !overrideTypesFile) {
     console.log('Types file already exists. Skipping generation.');
     return;
@@ -236,6 +298,10 @@ export type TypedHandler<T extends keyof operations> = TypedHandlerBase<operatio
   writeFileSync(typesFilePath, content);
 };
 
+/**
+ * Function to generate service file
+ * @param args setup arguments
+ */
 export const generateServiceFile = (args: {
   pathHandlerNames?: string[];
   webhookHandlerNames?: string[];

@@ -1,5 +1,8 @@
 import type { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext } from 'fastify';
 
+/**
+ * Settings used to determine prefix from servers section of OAS
+ */
 export interface PrefixExtractingSettings {
   // If defined, will try to find specific server based on url (Top priority)
   urlRegex?: RegExp;
@@ -9,6 +12,9 @@ export interface PrefixExtractingSettings {
   prefixVariable?: string;
 }
 
+/**
+ *  Options used to setup the plugin
+ */
 export interface Options {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
@@ -30,47 +36,72 @@ export interface Options {
 }
 
 // Security handling
+/**
+ *  Type for security handler function that will be used to check if user has access to specific route
+ */
 export type SecurityHandler = (req: FastifyRequest, scopes?: string[]) => boolean | Promise<boolean>;
 
+/**
+ * Dictionary of security handlers, where key is securitySchema name from OAS
+ */
 export interface SecurityHandlers {
   [resolverName: string]: SecurityHandler | undefined;
 }
 
 // Operations handling
+/**
+ * Dictionary of operation handlers, where key is operationId from OAS
+ */
 export interface OperationHandlers {
   [resolverName: string]: TypedHandlerBase | undefined;
-}
-
+} // Dictionary of "untyped" (using base FastifyRequest without typed body and paremeters) operation handlers, where key is operationId from OAS
 export interface OperationHandlersUntyped {
   // biome-ignore lint/suspicious/noExplicitAny: Fastify takes any response and serializes it to JSON.
   [resolverName: string]: ((req: FastifyRequest, reply: FastifyReply) => any) | undefined;
 }
 
 // Open API Specification
+/**
+ * Typed security section of OAS
+ */
 export type SecuritySpecification = {
   [securityHandlerName: string]: string[] | undefined;
 }[];
-
+/**
+ * Typed components section of OAS
+ */
 export interface Components {
   schemas?: Record<string, Record<string, unknown>>;
 }
 
+/**
+ * Typed paths section of OAS
+ */
 export interface PathsMap {
   [name: string]: unknown;
 }
 
+/**
+ * Typed server variable object of OAS
+ */
 export interface ServerVariableObject {
   enum?: string[];
   default: string;
   description?: string;
 }
 
+/**
+ * Typed sever object of OAS
+ */
 export interface ServerObject {
   url: string;
   description?: string;
   variables?: Record<string, ServerVariableObject>;
 }
 
+/**
+ * Typed OAS
+ */
 export interface OpenAPISpec {
   components?: Components;
   security?: SecuritySpecification;
@@ -79,6 +110,9 @@ export interface OpenAPISpec {
   servers?: ServerObject[];
 }
 
+/**
+ * Typed response object of OAS
+ */
 export interface SpecResponse {
   [statusCode: string]: {
     description: string;
@@ -87,6 +121,9 @@ export interface SpecResponse {
   };
 }
 
+/**
+ * Typed operation object of OAS
+ */
 export interface PathOperation {
   operationId?: string;
   parameters?: SchemaParameter[];
@@ -96,6 +133,9 @@ export interface PathOperation {
   'x-fastify-config'?: Omit<FastifyRequestContext<FastifyContextConfig>['config'], 'url' | 'method'>;
 }
 
+/**
+ * Typed paths object of OAS
+ */
 export type Paths = {
   parameters?: SchemaParameter[];
   'x-security'?: unknown;
@@ -103,8 +143,14 @@ export type Paths = {
   [method: string]: PathOperation;
 };
 
+/**
+ * Typed possible in paremeter values of OAS
+ */
 export type SchemaParametersIn = 'query' | 'path' | 'header' | 'cookie';
 
+/**
+ * Typed schema parameter object of OAS
+ */
 export interface SchemaParameter {
   name: string;
   description?: string;
@@ -115,7 +161,9 @@ export interface SchemaParameter {
   in: SchemaParametersIn;
 }
 
-// Parameters handling
+/**
+ * Parameters handling
+ */
 export interface ParsedParameter {
   type: string;
   properties: {
@@ -127,6 +175,9 @@ export interface ParsedParameter {
   required?: string[];
 }
 
+/**
+ * Typed reference object of OAS
+ */
 export interface ReferenceObject {
   $ref: string;
   summary?: string;
@@ -140,7 +191,9 @@ type OperationWithBody = { requestBody: any };
 // biome-ignore lint/suspicious/noExplicitAny: We want dynamic type here, to do some typescript magic
 type OperationWithResponse = { responses: any };
 
-// First argument is interface with operations, second is name of operation we want to get request type for
+/**
+ * First argument is interface with operations, second is name of operation we want to get request type for
+ */
 export type TypedRequestBase<Ops, T extends keyof Ops> = FastifyRequest<{
   // TypeScript magic, if operation has path parameters, we set them as type, otherwise we set never
   Params: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['path'] : never;

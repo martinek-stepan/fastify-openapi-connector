@@ -1,0 +1,5 @@
+{
+  "name": "@klexik/fastify-oas-generator",
+  "version": "1.1.1",
+  "exports": "./src/cli.ts"
+}

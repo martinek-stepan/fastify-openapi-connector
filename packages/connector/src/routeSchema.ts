@@ -1,6 +1,13 @@
 import type { FastifySchema } from 'fastify';
 import type { ParsedParameter, SchemaParametersIn, SpecResponse } from './types.js';
 
+/**
+ * Helper function to create route schema from the OpenAPI specification
+ * @param params OAS parameters object
+ * @param requestBody OAS requestBody object
+ * @param responses OAS responses object
+ * @returns Fastify schema object
+ */
 export const createRouteSchema = (
   params: Record<SchemaParametersIn, ParsedParameter | undefined>,
   requestBody?: unknown,

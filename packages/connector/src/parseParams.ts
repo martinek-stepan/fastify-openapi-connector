@@ -1,6 +1,12 @@
 import { removeXtensions } from './components.js';
 import type { ParsedParameter, SchemaParameter, SchemaParametersIn } from './types.js';
 
+/**
+ * Helper function to parse parameters from the OpenAPI specification
+ * @param data OAS parameters object
+ * @param params Existing parameters to extend
+ * @returns Parameters parameters object
+ */
 export const parseParams = (
   data: SchemaParameter[],
   params: Record<SchemaParametersIn, ParsedParameter | undefined> = {

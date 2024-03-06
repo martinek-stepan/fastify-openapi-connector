@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   call-publishing-workflow:
-    uses: ./.github/workflows/npm-publish-reusable.yml
+    uses: ./.github/workflows/publish-reusable.yml
     secrets: inherit
     with:
       directory: ./packages/generator

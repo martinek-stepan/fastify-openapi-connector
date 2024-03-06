@@ -41,7 +41,10 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
   fastify.register(setupRoutesAndValidation, { prefix });
 };
 
-export const openApiConnectorPlugin = fastifyPlugin(myPluginAsync, {
+/**
+ * Plugin to connect Fastify with OpenAPI specification
+ */
+export const openApiConnectorPlugin: FastifyPluginAsync<Options> = fastifyPlugin(myPluginAsync, {
   fastify: '>=4.0.0',
   name: 'fastify-openapi-connector',
 });

@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 jobs:
-  publish:
+  publish-npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -45,3 +45,9 @@ jobs:
         working-directory: ${{ inputs.directory }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-jsr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx jsr publish

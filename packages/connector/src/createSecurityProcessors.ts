@@ -1,13 +1,22 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import type { SecurityHandlers, SecuritySpecification } from './types.js';
 
-export const createSecurityProcessors = (handlers: SecurityHandlers, securityObject?: SecuritySpecification) => {
+/**
+ * Create security processors for Fastify
+ * @param handlers Security handlers
+ * @param securityObject Security object from OAS
+ * @returns Fastify middleware if any handler is defined
+ */
+export const createSecurityProcessors = (
+  handlers: SecurityHandlers,
+  securityObject?: SecuritySpecification,
+): void | ((req: FastifyRequest, res: FastifyReply) => Promise<void>) => {
   // No security, or empty array means we do not validate
   if (!securityObject || securityObject.length === 0) {
     return;
   }
 
-  return async (req: FastifyRequest, res: FastifyReply) => {
+  return async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
     let optionalSecurity = false;
     for (const item of securityObject) {
       if (Object.keys(item).length === 0) {
