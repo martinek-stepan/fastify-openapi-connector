@@ -10,10 +10,10 @@ import type { SecurityHandlers, SecuritySpecification } from './types.js';
 export const createSecurityProcessors = (
   handlers: SecurityHandlers,
   securityObject?: SecuritySpecification,
-): void | ((req: FastifyRequest, res: FastifyReply) => Promise<void>) => {
+): undefined | ((req: FastifyRequest, res: FastifyReply) => Promise<void>) => {
   // No security, or empty array means we do not validate
   if (!securityObject || securityObject.length === 0) {
-    return;
+    return undefined;
   }
 
   return async (req: FastifyRequest, res: FastifyReply): Promise<void> => {
