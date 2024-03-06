@@ -39,7 +39,7 @@ Main reason for creating that library were issues I had running my API with ts-n
 The package is designed to have minimal dependencies (`fastify-plugin` + `fastify` as peer dependecy) and give user as much freedom as possible.
 
 ### Generator
-I suggest using companion package [fastify-openapi-connector-generator](https://www.npmjs.com/package/fastify-openapi-connector-generator) to generate handlers & types.
+I suggest using companion package [fastify-oas-generator](https://jsr.io/@klexik/fastify-oas-generator) to generate handlers & types.
 
 ### Plugin Options
 
