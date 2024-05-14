@@ -21,7 +21,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
       setupRoutes(
         fastify,
         { operationHandlers, paths, globalSecurity, securityHandlers },
-        { isWebhook: false, useXSecurity: settings?.useXSecurity },
+        { isWebhook: false, useXSecurity: settings?.useXSecurity, validateResponse: settings?.validateResponses },
       );
     }
 
@@ -29,7 +29,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
       setupRoutes(
         fastify,
         { operationHandlers, paths: webhooks, globalSecurity, securityHandlers },
-        { isWebhook: true, useXSecurity: settings?.useXSecurity },
+        { isWebhook: true, useXSecurity: settings?.useXSecurity, validateResponse: settings?.validateResponses},
       );
     }
 

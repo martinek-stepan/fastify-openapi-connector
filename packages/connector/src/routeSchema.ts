@@ -12,6 +12,7 @@ export const createRouteSchema = (
   params: Record<SchemaParametersIn, ParsedParameter | undefined>,
   requestBody?: unknown,
   responses?: SpecResponse,
+  validateResponse?: boolean,
 ): FastifySchema => {
   // https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation-and-serialization
   // We only do schema for application/json as that is only one supported for parsing by fastify anyway
@@ -37,7 +38,7 @@ export const createRouteSchema = (
     schema.headers = params.header;
   }
 
-  if (responses) {
+  if (validateResponse === true && responses) {
     schema.response = responses;
   }
 
