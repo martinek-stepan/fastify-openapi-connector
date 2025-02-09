@@ -58,6 +58,7 @@ export const setupRoutes = (
   settings: {
     isWebhook: boolean;
     useXSecurity?: boolean;
+    contentTypes: string[];
   },
 ) => {
   for (const [path, pathObject] of Object.entries(routesInfo.paths)) {
@@ -114,7 +115,7 @@ export const setupRoutes = (
         url: url.replace(/{(\w+)}/g, ':$1'),
         handler,
         config: operationValues['x-fastify-config'],
-        schema: createRouteSchema(operationParams, requestBody, fixEmptyResponses(responses)),
+        schema: createRouteSchema(operationParams, settings.contentTypes, requestBody, fixEmptyResponses(responses)),
         // Operation security overrides global security
         preParsing: createSecurityProcessors(
           routesInfo.securityHandlers ?? {},
