@@ -218,9 +218,9 @@ export type TypedResponseBaseSync<Ops, T extends keyof Ops, Content = 'applicati
   ? FastifyReply | (Content extends keyof Ops[T]['responses']['200']['content'] ? Ops[T]['responses']['200']['content'][Content] : never)
   : FastifyReply;
 
-export type TypedResponseBaseAsync<Ops, T extends keyof Ops> = Promise<TypedResponseBaseSync<Ops, T>>;
+export type TypedResponseBaseAsync<Ops, T extends keyof Ops, Content = 'application/json'> = Promise<TypedResponseBaseSync<Ops, T, Content>>;
 
-export type TypedResponseBase<Ops, T extends keyof Ops> = TypedResponseBaseSync<Ops, T> | Promise<TypedResponseBaseSync<Ops, T>>;
+export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/json'> = TypedResponseBaseSync<Ops, T, Content> | Promise<TypedResponseBaseSync<Ops, T, Content>>;
 
 /**
  * Base type for operation handlers functions
@@ -228,6 +228,6 @@ export type TypedResponseBase<Ops, T extends keyof Ops> = TypedResponseBaseSync<
  * As TypeScript does not enforce return type of function (but provides suggestions) you should define your handles as follows:
  * `const myHandler: TypedHandlerBase = (req, reply): TypedResponseBase<Ops, T> => {`
  */
-export interface TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops> {
-  (req: TypedRequestBase<Ops, T>, reply: FastifyReply): TypedResponseBase<Ops, T>;
+export interface TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops, Content = 'application/json'> {
+  (req: TypedRequestBase<Ops, T, Content>, reply: FastifyReply): TypedResponseBase<Ops, T, Content>;
 }

@@ -5,7 +5,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
  * @param req Fastify request
  * @param rep Fastify reply
  */
-export const defaultHandler = async (req: FastifyRequest, rep: FastifyReply) => {
+export const defaultHandler = async (req: FastifyRequest, rep: FastifyReply): Promise<void> => {
   req.log.error(`Missing operation handler for operation ${req.method} ${req.routerPath}`);
   rep.code(501).send('Not implemented');
 };
