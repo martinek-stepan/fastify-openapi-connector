@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 jobs:
-  publish-npm:
+  check-linting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,6 +30,21 @@ jobs:
       
       - name: Check linting
         run: npm run lint:ci
+        working-directory: ${{ inputs.directory }}
+      
+  publish-npm:
+    needs:
+      - check-linting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
         working-directory: ${{ inputs.directory }}
       
       - name: Build
@@ -47,8 +62,19 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-jsr:
+    #needs:
+    #  - check-linting
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ${{ inputs.directory }}
+      
       - run: npx jsr publish
         working-directory: ${{ inputs.directory }}

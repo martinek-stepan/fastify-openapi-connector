@@ -14,6 +14,7 @@ export const createRouteSchema = (
   contentTypes: string[],
   requestBody?: unknown,
   responses?: SpecResponse,
+  validateResponse?: boolean,
 ): FastifySchema => {
 
   // biome-ignore lint/suspicious/noExplicitAny: There is definition of requestBody, but for our purpuses using dynamic typing is completly fine as we treat everything as optional
@@ -43,7 +44,7 @@ export const createRouteSchema = (
     schema.headers = params.header;
   }
 
-  if (responses) {
+  if (validateResponse === true && responses) {
     schema.response = responses;
   }
 
