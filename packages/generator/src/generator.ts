@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { glob } from 'glob';
+import camelCase from 'just-camel-case';
 
 /**
  * OAS Paths object
@@ -24,7 +25,7 @@ export interface OpenAPISpec {
 /**
  * Type of function that generates a file
  */
-export type TemplateFunction = (imp: string, typesPath: string) => string;
+export type TemplateFunction = (imp: string, operationId: string, typesPath: string) => string;
 
 /**
  * Function to generate handler files
@@ -33,10 +34,11 @@ export type TemplateFunction = (imp: string, typesPath: string) => string;
  */
 export const routeTemplateTyped: TemplateFunction = (
   imp: string,
+  operationId: string,
   typesPath: string,
-) => `import { TypedHandler, TypedResponse } from '${typesPath}';
+) => `import type { TypedHandler, TypedResponseAsync } from '${typesPath}';
 
-export const ${imp}: TypedHandler<'${imp}'> = async (req, reply): TypedResponse<'${imp}'> => {
+export const ${imp}: TypedHandler<'${operationId}'> = async (req, reply): TypedResponseAsync<'${operationId}'> => {
   return reply.code(501).send("Not Implemented");
 }
 `;
@@ -46,7 +48,7 @@ export const ${imp}: TypedHandler<'${imp}'> = async (req, reply): TypedResponse<
  * @param imp operationId
  * @param typesPath not used
  */
-export const routeTemplateUntyped: TemplateFunction = (imp: string, _: string) => `import { FastifyReply, FastifyRequest } from 'fastify';
+export const routeTemplateUntyped: TemplateFunction = (imp: string, _operationId: string, _typesPath: string) => `import type { FastifyReply, FastifyRequest } from 'fastify';
 
 export const ${imp} = (req: FastifyRequest, reply: FastifyReply): any => {
   return reply.code(501).send("Not Implemented");
@@ -57,7 +59,7 @@ export const ${imp} = (req: FastifyRequest, reply: FastifyReply): any => {
  * Function to generate security files
  * @param name security name
  */
-export const securityTemplate = (name: string): string => `import { FastifyRequest } from 'fastify';
+export const securityTemplate = (name: string): string => `import type { FastifyRequest } from 'fastify';
   
 export const ${name} = (req: FastifyRequest, scopes?: string[]): boolean | Promise<boolean> => {
   return false;
@@ -219,8 +221,8 @@ export const generateHandlerFiles = async (args: {
 
     const relative = path.relative(path.resolve(args.path), path.resolve(args.typesPath)).replace(/\\/g, '/');
 
-    for (const imp of missingImplementations) {
-      writeFileSync(path.join(args.path, `${imp}.ts`), args.templateFunction(imp, relative));
+    for (const operationId of missingImplementations) {
+      writeFileSync(path.join(args.path, `${operationId}.ts`), args.templateFunction(camelCase(operationId), operationId, relative));
     }
   }
 };
@@ -237,7 +239,7 @@ export const generateHandlerImports = (args: { handlerNames: string[]; path: str
       .join(handlerPath, `${name}.js'`)
       .replace(/\\/g, '/')
       .replace(/^(?!\.\.?\/)/, './');
-    return `import { ${name} } from '${importPath};`;
+    return `import { ${camelCase(name)} } from '${importPath};`;
   });
 };
 
@@ -282,11 +284,13 @@ export const generateTypesFile = (typesFilePath: string, schemaPath: string, ove
     return;
   }
 
-  const relative = path
-    .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js')))
-    .replace(/\\/g, '/')
-    .replace(/^(?!\.\.?\/)/, './');
-  const content = `import type { TypedRequestBase, TypedHandlerBase, TypedResponseBaseSync, TypedResponseBaseAsync} from 'fastify-openapi-connector';
+  const relative = schemaPath.startsWith('@')
+    ? schemaPath
+    : path
+        .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js')))
+        .replace(/\\/g, '/')
+        .replace(/^(?!\.\.?\/)/, './');
+  const content = `import type { TypedRequestBase, TypedHandlerBase, TypedResponseBase, TypedResponseBaseSync, TypedResponseBaseAsync} from 'fastify-openapi-connector';
 import type { operations } from '${relative}';
 
 export type TypedRequest<T extends keyof operations> = TypedRequestBase<operations, T>;  
@@ -355,7 +359,7 @@ export const generateServiceFile = (args: {
     typeImports.add(typeName);
     exports.push(
       `export const ${exportName}: ${typeName} = {
-${handlers.map((name) => `  ${name}`).join(',\n')},
+${handlers.map((name) => `  '${name}': ${camelCase(name)}`).join(',\n')},
 };`,
     );
   }
