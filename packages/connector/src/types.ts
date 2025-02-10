@@ -218,9 +218,13 @@ export type TypedResponseBaseSync<Ops, T extends keyof Ops, Content = 'applicati
   ? FastifyReply | (Content extends keyof Ops[T]['responses']['200']['content'] ? Ops[T]['responses']['200']['content'][Content] : never)
   : FastifyReply;
 
-export type TypedResponseBaseAsync<Ops, T extends keyof Ops, Content = 'application/json'> = Promise<TypedResponseBaseSync<Ops, T, Content>>;
+export type TypedResponseBaseAsync<Ops, T extends keyof Ops, Content = 'application/json'> = Promise<
+  TypedResponseBaseSync<Ops, T, Content>
+>;
 
-export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/json'> = TypedResponseBaseSync<Ops, T, Content> | Promise<TypedResponseBaseSync<Ops, T, Content>>;
+export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/json'> =
+  | TypedResponseBaseSync<Ops, T, Content>
+  | Promise<TypedResponseBaseSync<Ops, T, Content>>;
 
 /**
  * Base type for operation handlers functions
