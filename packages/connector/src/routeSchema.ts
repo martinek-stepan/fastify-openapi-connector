@@ -16,12 +16,11 @@ export const createRouteSchema = (
   responses?: SpecResponse,
   validateResponse?: boolean,
 ): FastifySchema => {
-
-  // biome-ignore lint/suspicious/noExplicitAny: There is definition of requestBody, but for our purpuses using dynamic typing is completly fine as we treat everything as optional
   let bodySchema = undefined;
   // https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation-and-serialization
   // By default we set 'application/json', but can be overriden by user. For example 'application/scim+json' might be needed.
   for (const contentType of contentTypes) {
+    // biome-ignore lint/suspicious/noExplicitAny: We not sure what we have
     bodySchema ??= (requestBody as any)?.content?.[contentType]?.schema;
   }
 

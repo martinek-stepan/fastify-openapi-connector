@@ -202,7 +202,11 @@ export type TypedRequestBase<Ops, T extends keyof Ops, Content = 'application/js
   // TypeScript magic, if operation has query parameters, we set them as type, otherwise we set never
   Querystring: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['query'] : never;
   // TypeScript magic, if operation has requestBody with content Content type, we set it as type, otherwise we set never
-  Body: Ops[T] extends OperationWithBody ? (Content extends keyof Ops[T]['requestBody']['content'] ? Ops[T]['requestBody']['content'][Content] : never) : never;
+  Body: Ops[T] extends OperationWithBody
+    ? Content extends keyof Ops[T]['requestBody']['content']
+      ? Ops[T]['requestBody']['content'][Content]
+      : never
+    : never;
 }>;
 
 /** First argument is interface with operations, second is name of operation we want to get response type for
@@ -213,7 +217,7 @@ export type TypedRequestBase<Ops, T extends keyof Ops, Content = 'application/js
 export type TypedResponseBaseSync<Ops, T extends keyof Ops, Content = 'application/json'> = Ops[T] extends OperationWithResponse
   ? FastifyReply | (Content extends keyof Ops[T]['responses']['200']['content'] ? Ops[T]['responses']['200']['content'][Content] : never)
   : FastifyReply;
-  
+
 export type TypedResponseBaseAsync<Ops, T extends keyof Ops> = Promise<TypedResponseBaseSync<Ops, T>>;
 
 export type TypedResponseBase<Ops, T extends keyof Ops> = TypedResponseBaseSync<Ops, T> | Promise<TypedResponseBaseSync<Ops, T>>;
