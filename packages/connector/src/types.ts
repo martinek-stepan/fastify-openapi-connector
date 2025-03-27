@@ -9,6 +9,7 @@ import type {
   RawReplyDefaultExpression,
   RawRequestDefaultExpression,
   RawServerDefault,
+  RouteGenericInterface,
   RouteHandler,
 } from 'fastify';
 
@@ -238,15 +239,13 @@ type TransformOperationsToReply<Ops, T extends keyof Ops> = Ops[T] extends { res
   : never;
 
 type TypedFastifyReply<Ops, T extends keyof Ops> = FastifyReply<
+  RouteGenericInterface,
   RawServerDefault,
   RawRequestDefaultExpression<RawServerDefault>,
   RawReplyDefaultExpression<RawServerDefault>,
   {
     Reply: TransformOperationsToReply<Ops, T>;
-  },
-  ContextConfigDefault,
-  FastifySchema,
-  FastifyTypeProviderDefault
+  }
 >;
 
 /**
