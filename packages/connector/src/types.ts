@@ -1,4 +1,4 @@
-import type { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext } from 'fastify';
+import type { ContextConfigDefault, FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext, FastifySchema, FastifyTypeProviderDefault, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault, RouteHandler } from 'fastify';
 
 /**
  * Settings used to determine prefix from servers section of OAS
@@ -193,39 +193,73 @@ type OperationWithBody = { requestBody: any };
 // biome-ignore lint/suspicious/noExplicitAny: We want dynamic type here, to do some typescript magic
 type OperationWithResponse = { responses: any };
 
+type RecordToTuple<T> = [keyof T] extends [never]
+  ? [] // Stop recursion when the record is empty
+  : T extends Record<string, unknown>
+    ? {
+        [K in keyof T]: [T[K], ...RecordToTuple<Omit<T, K>>];
+      }[keyof T]
+    : [];
+
+type evaluate<T> = { [K in keyof T]: T[K] } & unknown;
+/**
+ * XOR type for two types.
+ */
+type xor<A, B> = evaluate<A & { [K in keyof B]?: undefined }> | evaluate<B & { [K in keyof A]?: undefined }>;
+
+/**
+ * XOR type for multiple types.
+ * Recursively applies `xor2` to combine all types into a mutually exclusive type.
+ */
+type ArrayToXor<T extends unknown[]> = T extends [infer First, ...infer Rest] ? (Rest extends unknown[] ? xor<First, ArrayToXor<Rest>> : First) : unknown;
+
+type TransformOperationsToReply<Ops, T extends keyof Ops> = Ops[T] extends { responses: infer Responses }
+  ? {
+      [StatusCode in keyof Responses]: Responses[StatusCode] extends { content: infer Content }
+        ? ArrayToXor<RecordToTuple<Content>> // Flatten the `content` property
+        : Responses[StatusCode]; // Keep other properties unchanged
+    }
+  : never;
+
+type TypedFastifyReply<Ops, T extends keyof Ops> = FastifyReply<
+  RawServerDefault,
+  RawRequestDefaultExpression<RawServerDefault>,
+  RawReplyDefaultExpression<RawServerDefault>,
+  {
+    Reply: TransformOperationsToReply<Ops, T>;
+  },
+  ContextConfigDefault,
+  FastifySchema,
+  FastifyTypeProviderDefault
+>;
+
 /**
  * First argument is interface with operations, second is name of operation we want to get request type for
  */
 export type TypedRequestBase<Ops, T extends keyof Ops, Content = 'application/json'> = FastifyRequest<{
-  // TypeScript magic, if operation has path parameters, we set them as type, otherwise we set never
   Params: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['path'] : never;
-  // TypeScript magic, if operation has query parameters, we set them as type, otherwise we set never
   Querystring: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['query'] : never;
-  // TypeScript magic, if operation has requestBody with content Content type, we set it as type, otherwise we set never
-  Body: Ops[T] extends OperationWithBody
-    ? Content extends keyof Ops[T]['requestBody']['content']
-      ? Ops[T]['requestBody']['content'][Content]
-      : never
-    : never;
+  Body: Ops[T] extends OperationWithBody ? (Content extends keyof Ops[T]['requestBody']['content'] ? Ops[T]['requestBody']['content'][Content] : never) : never;
 }>;
 
+export type TypedRouteHandler<Ops, T extends keyof Ops, Content = 'application/json'> = RouteHandler<{
+  Params: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['path'] : never;
+  Querystring: Ops[T] extends OperationWithParams ? Ops[T]['parameters']['query'] : never;
+  Body: Ops[T] extends OperationWithBody ? (Content extends keyof Ops[T]['requestBody']['content'] ? Ops[T]['requestBody']['content'][Content] : never) : never;
+  Reply: TransformOperationsToReply<Ops, T>;
+}>;
 /** First argument is interface with operations, second is name of operation we want to get response type for
  * As what ever you retunr in fastify will be treated as 200 response, we want to restrict this to only valid responses
  * If operation has 200 response with content application/json, we set it as type (or FastifyReply), otherwise we set FastifyReply
  * That way we can wither return strongly typed response or just FastifyReply where we can set any additional information like code, headers, etc.
  */
 export type TypedResponseBaseSync<Ops, T extends keyof Ops, Content = 'application/json'> = Ops[T] extends OperationWithResponse
-  ? FastifyReply | (Content extends keyof Ops[T]['responses']['200']['content'] ? Ops[T]['responses']['200']['content'][Content] : never)
-  : FastifyReply;
-
-export type TypedResponseBaseAsync<Ops, T extends keyof Ops, Content = 'application/json'> = Promise<
-  TypedResponseBaseSync<Ops, T, Content>
->;
-
+  ? TypedFastifyReply<Ops, T> | (Content extends keyof Ops[T]['responses']['200']['content'] ? Ops[T]['responses']['200']['content'][Content] : never)
+  : TypedFastifyReply<Ops, T>;
+export type TypedResponseBaseAsync<Ops, T extends keyof Ops, Content = 'application/json'> = Promise<TypedResponseBaseSync<Ops, T, Content>>;
 export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/json'> =
   | TypedResponseBaseSync<Ops, T, Content>
   | Promise<TypedResponseBaseSync<Ops, T, Content>>;
-
 /**
  * Base type for operation handlers functions
  * !!! IMPORTANT !!!
@@ -233,5 +267,5 @@ export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/j
  * `const myHandler: TypedHandlerBase = (req, reply): TypedResponseBase<Ops, T> => {`
  */
 export interface TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops, Content = 'application/json'> {
-  (req: TypedRequestBase<Ops, T, Content>, reply: FastifyReply): TypedResponseBase<Ops, T, Content>;
+  (req: TypedRequestBase<Ops, T, Content>, reply: TypedFastifyReply<Ops, T>): TypedResponseBase<Ops, T, Content>;
 }

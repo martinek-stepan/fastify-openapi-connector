@@ -290,7 +290,7 @@ export const generateTypesFile = (typesFilePath: string, schemaPath: string, ove
         .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js')))
         .replace(/\\/g, '/')
         .replace(/^(?!\.\.?\/)/, './');
-  const content = `import type { TypedRequestBase, TypedHandlerBase, TypedResponseBase, TypedResponseBaseSync, TypedResponseBaseAsync} from 'fastify-openapi-connector';
+  const content = `import type { TypedRequestBase, TypedHandlerBase, TypedResponseBase, TypedResponseBaseSync, TypedResponseBaseAsync } from 'fastify-openapi-connector';
 import type { operations } from '${relative}';
 
 export type TypedRequest<T extends keyof operations> = TypedRequestBase<operations, T>;  

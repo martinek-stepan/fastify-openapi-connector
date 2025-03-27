@@ -1,5 +1,5 @@
 {
   "name": "@klexik/fastify-oas-connector",
-  "version": "1.1.8",
+  "version": "1.2.0",
   "exports": "./src/index.ts"
 }
