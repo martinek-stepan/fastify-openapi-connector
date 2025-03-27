@@ -1,15 +1,8 @@
 import type {
-  ContextConfigDefault,
   FastifyContextConfig,
   FastifyReply,
   FastifyRequest,
   FastifyRequestContext,
-  FastifySchema,
-  FastifyTypeProviderDefault,
-  RawReplyDefaultExpression,
-  RawRequestDefaultExpression,
-  RawServerDefault,
-  RouteGenericInterface,
   RouteHandler,
 } from 'fastify';
 
@@ -28,10 +21,12 @@ export interface PrefixExtractingSettings {
 /**
  *  Options used to setup the plugin
  */
-export interface Options {
+
+// biome-ignore lint/suspicious/noExplicitAny: We can not pass typed options to plugin
+export  interface Options<Ops = any> {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
-  operationHandlers: OperationHandlers | OperationHandlersUntyped;
+  operationHandlers: OperationHandlers<Ops> | OperationHandlersUntyped;
   openApiSpecification: OpenAPISpec;
 
   settings?: {
@@ -240,10 +235,6 @@ type TransformOperationsToReply<Ops, T extends keyof Ops> = Ops[T] extends { res
   : never;
 
 type TypedFastifyReply<Ops, T extends keyof Ops> = FastifyReply<
-  RouteGenericInterface,
-  RawServerDefault,
-  RawRequestDefaultExpression<RawServerDefault>,
-  RawReplyDefaultExpression<RawServerDefault>,
   {
     Reply: TransformOperationsToReply<Ops, T>;
   }
