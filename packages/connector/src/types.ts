@@ -1,10 +1,4 @@
-import type {
-  FastifyContextConfig,
-  FastifyReply,
-  FastifyRequest,
-  FastifyRequestContext,
-  RouteHandler,
-} from 'fastify';
+import type { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext, RouteHandler } from 'fastify';
 
 /**
  * Settings used to determine prefix from servers section of OAS
@@ -23,7 +17,7 @@ export interface PrefixExtractingSettings {
  */
 
 // biome-ignore lint/suspicious/noExplicitAny: We can not pass typed options to plugin
-export  interface Options<Ops = any> {
+export interface Options<Ops = any> {
   //validateContentTypeResolvers?: boolean;
   securityHandlers?: SecurityHandlers;
   operationHandlers: OperationHandlers<Ops> | OperationHandlersUntyped;
@@ -234,11 +228,9 @@ type TransformOperationsToReply<Ops, T extends keyof Ops> = Ops[T] extends { res
     }
   : never;
 
-type TypedFastifyReply<Ops, T extends keyof Ops> = FastifyReply<
-  {
-    Reply: TransformOperationsToReply<Ops, T>;
-  }
->;
+type TypedFastifyReply<Ops, T extends keyof Ops> = FastifyReply<{
+  Reply: TransformOperationsToReply<Ops, T>;
+}>;
 
 /**
  * First argument is interface with operations, second is name of operation we want to get request type for
