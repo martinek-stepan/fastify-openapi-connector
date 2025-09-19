@@ -4,6 +4,7 @@ import { defaultHandler } from './defaultOperationHandler.js';
 import { parseParams } from './parseParams.js';
 import { createRouteSchema } from './routeSchema.js';
 import type {
+  Components,
   OperationHandlers,
   OperationHandlersUntyped,
   Paths,
@@ -52,6 +53,7 @@ export const setupRoutes = (
   routesInfo: {
     operationHandlers: OperationHandlersUntyped | OperationHandlers;
     paths: PathsMap;
+    components: Components;
     globalSecurity?: SecuritySpecification;
     securityHandlers?: SecurityHandlers;
   },
@@ -62,6 +64,8 @@ export const setupRoutes = (
     contentTypes: string[];
   },
 ) => {
+  const schemaParameters = routesInfo.components?.parameters ?? {};
+
   for (const [path, pathObject] of Object.entries(routesInfo.paths)) {
     let url = path;
     if (settings.isWebhook) {
@@ -86,7 +90,7 @@ export const setupRoutes = (
         fastify.log.warn(`${path} - x-security is not a valid SecurityObject! Will not be used.`);
       }
     }
-    const params = parseParams(parameters ?? []);
+    const params = parseParams(parameters ?? [], schemaParameters);
 
     for (const [method, operation] of Object.entries(methods)) {
       // Skip extensions
@@ -108,7 +112,7 @@ export const setupRoutes = (
         handler = defaultHandler;
       }
       // Overrides any path params already defined
-      const operationParams = parseParams(parameters ?? [], structuredClone(params));
+      const operationParams = parseParams(parameters ?? [], schemaParameters, structuredClone(params));
 
       fastify.route({
         method: method.toUpperCase() as HTTPMethods,

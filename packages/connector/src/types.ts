@@ -76,6 +76,7 @@ export type SecuritySpecification = {
  * Typed components section of OAS
  */
 export interface Components {
+  parameters?: Record<string, SchemaParameter>;
   schemas?: Record<string, Record<string, unknown>>;
 }
 
@@ -131,7 +132,7 @@ export interface SpecResponse {
  */
 export interface PathOperation {
   operationId?: string;
-  parameters?: SchemaParameter[];
+  parameters?: (SchemaParameter |ReferenceObject)[];
   requestBody: unknown;
   security?: SecuritySpecification;
   responses?: SpecResponse;

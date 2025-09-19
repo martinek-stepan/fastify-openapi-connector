@@ -10,7 +10,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
   fastify,
   { openApiSpecification, securityHandlers, operationHandlers, settings },
 ) => {
-  const { components, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
+  const { components = {}, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
 
   const prefix = determinePrefix(fastify, settings, servers);
 
@@ -20,7 +20,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
     if (settings?.initializePaths !== false && paths) {
       setupRoutes(
         fastify,
-        { operationHandlers, paths, globalSecurity, securityHandlers },
+        { operationHandlers, paths, components, globalSecurity, securityHandlers },
         {
           isWebhook: false,
           useXSecurity: settings?.useXSecurity,
@@ -33,7 +33,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
     if (settings?.initializeWebhooks === true && webhooks) {
       setupRoutes(
         fastify,
-        { operationHandlers, paths: webhooks, globalSecurity, securityHandlers },
+        { operationHandlers, paths: webhooks, components, globalSecurity, securityHandlers },
         {
           isWebhook: true,
           useXSecurity: settings?.useXSecurity,
