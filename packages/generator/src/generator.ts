@@ -188,6 +188,7 @@ export const generate = async (args: {
     routesPath: args.routesPath,
     webhooksPath: args.webhooksPath,
     securityPath: args.securityPath,
+    typed: args.typed,
   });
   console.log('DONE!');
 };
@@ -251,6 +252,7 @@ export interface OrganizedHandlers {
   handlers?: string[];
   exportName: string;
   typeName: string;
+  importType: string;
 }
 
 /**
@@ -315,6 +317,7 @@ export const generateServiceFile = (args: {
   webhooksPath?: string;
   securityPath?: string;
   servicePath: string;
+  typed: boolean;
 }) => {
   let serviceTs = '// THIS FILE IS AUTO GENERATED - DO NOT MANUALLY ALTER!!\n';
 
@@ -323,19 +326,22 @@ export const generateServiceFile = (args: {
       path: args.routesPath,
       handlers: args.pathHandlerNames,
       exportName: 'pathHandlers',
-      typeName: 'OperationHandlers',
+      typeName: args.typed ? 'OperationHandlers<operations>' : 'OperationHandlersUntyped',
+      importType: args.typed ? 'OperationHandlers' : 'OperationHandlersUntyped',
     },
     {
       path: args.webhooksPath,
       handlers: args.webhookHandlerNames,
       exportName: 'webhookHandlers',
-      typeName: 'OperationHandlers',
+      typeName: args.typed ? 'OperationHandlers<operations>' : 'OperationHandlersUntyped',
+      importType: args.typed ? 'OperationHandlers' : 'OperationHandlersUntyped',
     },
     {
       path: args.securityPath,
       handlers: args.securityHandlerNames,
       exportName: 'securityHandlers',
       typeName: 'SecurityHandlers',
+      importType: 'SecurityHandlers',
     },
   ].sort(handlersSort);
 
@@ -343,7 +349,7 @@ export const generateServiceFile = (args: {
   const typeImports: Set<string> = new Set();
   const exports: string[] = [];
 
-  for (const { path, handlers, exportName, typeName } of organizedHandlers) {
+  for (const { path, handlers, exportName, typeName, importType } of organizedHandlers) {
     if (!path || !handlers) {
       continue;
     }
@@ -356,7 +362,7 @@ export const generateServiceFile = (args: {
       }),
     );
 
-    typeImports.add(typeName);
+    typeImports.add(importType);
     exports.push(
       `export const ${exportName}: ${typeName} = {
 ${handlers.map((name) => `  '${name}': ${camelCase(name)}`).join(',\n')},
@@ -366,6 +372,10 @@ ${handlers.map((name) => `  '${name}': ${camelCase(name)}`).join(',\n')},
 
   if (typeImports.size > 0) {
     imports.unshift(`import type { ${Array.from(typeImports).join(', ')} } from 'fastify-openapi-connector';`);
+  }
+
+  if (args.typed) {
+    imports.push(`import type { operations } from './schema.js';`);
   }
 
   serviceTs += `${imports.join('\n')}\n\n`;

@@ -1,5 +1,14 @@
 import type { FastifySchema } from 'fastify';
+import { removeRefPrefix, removeXtensions } from './components.js';
 import type { ParsedParameter, SchemaParametersIn, SpecResponse } from './types.js';
+
+const cleanSchema = <T extends object>(value: T): T => {
+  const filteredValue = structuredClone(value);
+  removeXtensions(filteredValue);
+  removeRefPrefix(filteredValue);
+
+  return filteredValue;
+}
 
 /**
  * Helper function to create route schema from the OpenAPI specification
@@ -16,7 +25,7 @@ export const createRouteSchema = (
   responses?: SpecResponse,
   validateResponse?: boolean,
 ): FastifySchema => {
-  let bodySchema = undefined;
+  let bodySchema ;
   // https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation-and-serialization
   // By default we set 'application/json', but can be overriden by user. For example 'application/scim+json' might be needed.
   for (const contentType of contentTypes) {
@@ -28,23 +37,23 @@ export const createRouteSchema = (
   const schema: FastifySchema = {};
 
   if (bodySchema) {
-    schema.body = bodySchema;
+    schema.body = cleanSchema(bodySchema);
   }
 
   if (params.query) {
-    schema.querystring = params.query;
+    schema.querystring = cleanSchema(params.query);
   }
 
   if (params.path) {
-    schema.params = params.path;
+    schema.params = cleanSchema(params.path);
   }
 
   if (params.header) {
-    schema.headers = params.header;
+    schema.headers = cleanSchema(params.header);
   }
 
   if (validateResponse === true && responses) {
-    schema.response = responses;
+    schema.response = cleanSchema(responses);
   }
 
   return schema;

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "z - fastify-oas-connector - tester",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

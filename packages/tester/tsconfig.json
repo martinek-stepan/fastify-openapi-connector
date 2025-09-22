@@ -1,0 +1,45 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	// Read more: https://www.totaltypescript.com/tsconfig-cheat-sheet
+	"compilerOptions": {
+		/* Base Options: */
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"target": "es2022",
+		"allowJs": true,
+		"resolveJsonModule": true,
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"verbatimModuleSyntax": true,
+
+		/* Strictness */
+		"strict": true,
+		"noImplicitOverride": true,
+		"forceConsistentCasingInFileNames": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noUncheckedIndexedAccess": true,
+		"noFallthroughCasesInSwitch": true,
+
+		/* If transpiling with TypeScript: */
+		"module": "NodeNext",
+		"outDir": "dist",
+		"sourceMap": true,
+
+		/* AND if you're building for a library: */
+		"declaration": true,
+
+		/* AND if you're building for a library in a monorepo: */
+		"declarationMap": true,
+
+		/* If your code doesn't run in the DOM: */
+		"lib": ["ESNext"],
+
+		"erasableSyntaxOnly": true,
+		"rewriteRelativeImportExtensions": true,
+		"allowImportingTsExtensions": true,
+		"noEmit": false,
+		"rootDir": "src"
+	},
+	"exclude": ["**/dist", "**/node_modules", "**/bin"]
+}
