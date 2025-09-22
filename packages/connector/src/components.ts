@@ -25,8 +25,7 @@ export const removeXtensions = (obj: unknown) => {
       }
     }
   }
-}; 
-
+};
 
 /**
  * Helper function to remove x-extensions from the schema
@@ -52,7 +51,7 @@ export const removeRefPrefix = (obj: unknown) => {
       }
     }
   }
-}; 
+};
 
 /**
  * Function registering components (schema) to the fastify instance

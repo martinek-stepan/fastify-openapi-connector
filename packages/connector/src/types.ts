@@ -132,7 +132,7 @@ export interface SpecResponse {
  */
 export interface PathOperation {
   operationId?: string;
-  parameters?: (SchemaParameter |ReferenceObject)[];
+  parameters?: (SchemaParameter | ReferenceObject)[];
   requestBody: unknown;
   security?: SecuritySpecification;
   responses?: SpecResponse;

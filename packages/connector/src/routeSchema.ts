@@ -8,7 +8,7 @@ const cleanSchema = <T extends object>(value: T): T => {
   removeRefPrefix(filteredValue);
 
   return filteredValue;
-}
+};
 
 /**
  * Helper function to create route schema from the OpenAPI specification
@@ -25,7 +25,7 @@ export const createRouteSchema = (
   responses?: SpecResponse,
   validateResponse?: boolean,
 ): FastifySchema => {
-  let bodySchema ;
+  let bodySchema;
   // https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/#validation-and-serialization
   // By default we set 'application/json', but can be overriden by user. For example 'application/scim+json' might be needed.
   for (const contentType of contentTypes) {

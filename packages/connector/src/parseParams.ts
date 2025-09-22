@@ -20,7 +20,8 @@ export const parseParams = (
   },
 ): Record<SchemaParametersIn, ParsedParameter | undefined> => {
   for (let item of data) {
-    if ('$ref' in item) { // resolve $ref
+    if ('$ref' in item) {
+      // resolve $ref
       item = schemaParameters[item.$ref.substring(schemaParamPrefixLength)];
     }
     if (item.in === 'cookie') {
