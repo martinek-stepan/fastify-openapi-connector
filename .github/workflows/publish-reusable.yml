@@ -36,6 +36,7 @@ jobs:
     needs:
       - check-linting
     runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[skip-npm]') != false
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -62,8 +63,9 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-jsr:
-    #needs:
-    #  - check-linting
+    needs:
+      - check-linting
+    if: contains(github.event.head_commit.message, '[skip-jsr]') != false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
