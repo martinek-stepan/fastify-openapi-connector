@@ -17,12 +17,13 @@ const HELP = `Usage
   --security-dir             [Optional] Directory to generate security handlers.
   --untyped                  [Optional] Indicates that generated handlers should be untyped.
   --override-types-file      [Optional] Indicates that types file should be overrided if exists.
+  --import-extension         [Optional] Import extension of js/ts files. Default is 'js'
 `;
 
 const [, , ...args] = process.argv;
 const flags = parser(args, {
   boolean: ['untyped', 'help', 'overrideTypesFile'],
-  string: ['specFile', 'schemaFile', 'pathsDir', 'webhooksDir', 'securityDir', 'typesFile', 'serviceFile'],
+  string: ['specFile', 'schemaFile', 'pathsDir', 'webhooksDir', 'securityDir', 'typesFile', 'serviceFile', 'importExtension'],
 });
 
 if ('help' in flags) {
@@ -63,4 +64,5 @@ await generate({
   securityPath: flags.securityDir,
   typed: !flags.untyped,
   overrideTypesFile: !!flags.overrideTypesFile,
+  importExtension: flags.importExtension ?? 'js',
 });

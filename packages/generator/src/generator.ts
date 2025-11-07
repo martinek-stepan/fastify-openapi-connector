@@ -149,6 +149,7 @@ export const generate = async (args: {
   schemaFilePath: string;
   typed: boolean;
   overrideTypesFile: boolean;
+  importExtension: string;
 }): Promise<void> => {
   let pathOperationIds: string[] | undefined;
   let webhookOperationIds: string[] | undefined;
@@ -189,6 +190,8 @@ export const generate = async (args: {
     webhooksPath: args.webhooksPath,
     securityPath: args.securityPath,
     typed: args.typed,
+    importExtension: args.importExtension,
+    schemaFile: args.schemaFilePath,
   });
   console.log('DONE!');
 };
@@ -233,11 +236,16 @@ export const generateHandlerFiles = async (args: {
  * @param args setup arguments
  * @returns handler imports
  */
-export const generateHandlerImports = (args: { handlerNames: string[]; path: string; servicePath: string }): string[] => {
+export const generateHandlerImports = (args: {
+  handlerNames: string[];
+  path: string;
+  servicePath: string;
+  importExtension: string;
+}): string[] => {
   return args.handlerNames.map((name) => {
     const handlerPath = path.relative(path.resolve(args.servicePath, '..'), path.resolve(args.path));
     const importPath = path
-      .join(handlerPath, `${name}.js'`)
+      .join(handlerPath, `${name}.${args.importExtension}'`)
       .replace(/\\/g, '/')
       .replace(/^(?!\.\.?\/)/, './');
     return `import { ${camelCase(name)} } from '${importPath};`;
@@ -318,6 +326,8 @@ export const generateServiceFile = (args: {
   securityPath?: string;
   servicePath: string;
   typed: boolean;
+  importExtension: string;
+  schemaFile: string;
 }) => {
   let serviceTs = '// THIS FILE IS AUTO GENERATED - DO NOT MANUALLY ALTER!!\n';
 
@@ -359,6 +369,7 @@ export const generateServiceFile = (args: {
         handlerNames: handlers,
         path: path,
         servicePath: args.servicePath,
+        importExtension: args.importExtension,
       }),
     );
 
@@ -375,7 +386,7 @@ ${handlers.map((name) => `  '${name}': ${camelCase(name)}`).join(',\n')},
   }
 
   if (args.typed) {
-    imports.push(`import type { operations } from './schema.js';`);
+    imports.push(`import type { operations } from '${args.schemaFile}';`);
   }
 
   serviceTs += `${imports.join('\n')}\n\n`;
