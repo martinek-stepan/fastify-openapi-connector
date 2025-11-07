@@ -76,6 +76,7 @@ export const parseAndGenerateOperationHandlers = async (args: {
   filesPath: string;
   typesPath: string;
   typed: boolean;
+  importExtension: string;
 }): Promise<string[]> => {
   const operationIds: string[] = [];
 
@@ -100,7 +101,7 @@ export const parseAndGenerateOperationHandlers = async (args: {
   await generateHandlerFiles({
     handlerNames: operationIds,
     path: args.filesPath,
-    typesPath: args.typesPath.replace(/.ts$/, '.js').replace(/^(?!\.\.?\/)/, './'),
+    typesPath: args.typesPath.replace(/.ts$/, `.${args.importExtension}`).replace(/^(?!\.\.?\/)/, './'),
     templateFunction: args.typed ? routeTemplateTyped : routeTemplateUntyped,
   });
   return operationIds;
@@ -161,6 +162,7 @@ export const generate = async (args: {
       typesPath: args.typesPath,
       paths: args.spec.paths,
       typed: args.typed,
+      importExtension: args.importExtension,
     });
   }
 
@@ -170,6 +172,7 @@ export const generate = async (args: {
       typesPath: args.typesPath,
       paths: args.spec.webhooks,
       typed: args.typed,
+      importExtension: args.importExtension,
     });
   }
 
@@ -180,7 +183,7 @@ export const generate = async (args: {
     });
   }
 
-  generateTypesFile(args.typesPath, args.schemaFilePath, args.overrideTypesFile);
+  generateTypesFile(args.typesPath, args.schemaFilePath, args.overrideTypesFile, args.importExtension);
   generateServiceFile({
     servicePath: args.servicePath,
     pathHandlerNames: pathOperationIds,
@@ -288,7 +291,7 @@ export const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers): number
  * @param overrideTypesFile Indicates that types file should be overrided if exists
  * @returns
  */
-export const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTypesFile: boolean): void => {
+export const generateTypesFile = (typesFilePath: string, schemaPath: string, overrideTypesFile: boolean, importExtension: string): void => {
   if (existsSync(typesFilePath) && !overrideTypesFile) {
     console.log('Types file already exists. Skipping generation.');
     return;
@@ -297,7 +300,7 @@ export const generateTypesFile = (typesFilePath: string, schemaPath: string, ove
   const relative = schemaPath.startsWith('@')
     ? schemaPath
     : path
-        .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, '.js')))
+        .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, `.${importExtension}`)))
         .replace(/\\/g, '/')
         .replace(/^(?!\.\.?\/)/, './');
   const content = `import type { TypedRequestBase, TypedHandlerBase, TypedResponseBase, TypedResponseBaseSync, TypedResponseBaseAsync } from 'fastify-openapi-connector';
