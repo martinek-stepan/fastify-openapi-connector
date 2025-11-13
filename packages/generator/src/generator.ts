@@ -285,6 +285,22 @@ export const handlersSort = (a: OrganizedHandlers, b: OrganizedHandlers): number
 };
 
 /**
+ * Function to get the relative schema file path from a base path
+ * @param basePath Base file path
+ * @param schemaPath Schema file path
+ * @param importExtension Import extension
+ * @returns Relative schema file path
+ */
+export const getRelativeSchemaFilePath = (basePath: string, schemaPath: string, importExtension: string): string => {
+  return schemaPath.startsWith('@')
+    ? schemaPath
+    : path
+      .relative(path.resolve(basePath, '..'), path.resolve(schemaPath.replace(/.ts$/, `.${importExtension}`)))
+      .replace(/\\/g, '/')
+      .replace(/^(?!\.\.?\/)/, './');
+}
+
+/**
  * Generets types file
  * @param typesFilePath Path where to generate
  * @param schemaPath  Path to schema file
@@ -297,14 +313,9 @@ export const generateTypesFile = (typesFilePath: string, schemaPath: string, ove
     return;
   }
 
-  const relative = schemaPath.startsWith('@')
-    ? schemaPath
-    : path
-        .relative(path.resolve(typesFilePath, '..'), path.resolve(schemaPath.replace(/.ts$/, `.${importExtension}`)))
-        .replace(/\\/g, '/')
-        .replace(/^(?!\.\.?\/)/, './');
+  const relativeSchemaPath = getRelativeSchemaFilePath(typesFilePath, schemaPath, importExtension);
   const content = `import type { TypedRequestBase, TypedHandlerBase, TypedResponseBase, TypedResponseBaseSync, TypedResponseBaseAsync } from 'fastify-openapi-connector';
-import type { operations } from '${relative}';
+import type { operations } from '${relativeSchemaPath}';
 
 export type TypedRequest<T extends keyof operations> = TypedRequestBase<operations, T>;  
 export type TypedResponse<T extends keyof operations> = TypedResponseBase<operations, T>;
@@ -389,7 +400,8 @@ ${handlers.map((name) => `  '${name}': ${camelCase(name)}`).join(',\n')},
   }
 
   if (args.typed) {
-    imports.push(`import type { operations } from '${args.schemaFile}';`);
+    const relativeSchemaPath = getRelativeSchemaFilePath(args.servicePath, args.schemaFile, args.importExtension);
+    imports.push(`import type { operations } from '${relativeSchemaPath}';`);
   }
 
   serviceTs += `${imports.join('\n')}\n\n`;

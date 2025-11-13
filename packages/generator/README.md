@@ -1,14 +1,14 @@
 # Fastify OpenAPI Connector Generator
-Companion package to `fastify-openapi-connector` usable both programatically and with `npx`.
+Companion package to `fastify-openapi-connector` usable both programmatically and with `npx`.
 
-`fastify-openapi-connector` is minimum dependency package, therefore generator has been split into it's own (this) package.
+`fastify-openapi-connector` is minimum dependency package, therefore generator has been split into its own (this) package.
 
 ## Usage
 Use npx:
 
 `npx fastify-openapi-generator <options>`
 
-Or import the generator usual way and programatically, everything is exported so you can also just pick bits and pieces.
+Or import the generator usual way and programmatically, everything is exported so you can also just pick bits and pieces.
 
 ### Options
 #### Required
@@ -33,7 +33,9 @@ Or import the generator usual way and programatically, everything is exported so
 * --untyped
   * Indicates that generated handlers should be untyped.
 * --override-types-file
-  * Indicates that types file should be overrided if exists.
+  * Indicates that types file should be overridden if exists.
+* --import-extension
+  * Import extension of js/ts files. Default is `js`.
 
 
 ### Example
