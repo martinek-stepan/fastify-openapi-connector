@@ -295,10 +295,10 @@ export const getRelativeSchemaFilePath = (basePath: string, schemaPath: string, 
   return schemaPath.startsWith('@')
     ? schemaPath
     : path
-      .relative(path.resolve(basePath, '..'), path.resolve(schemaPath.replace(/.ts$/, `.${importExtension}`)))
-      .replace(/\\/g, '/')
-      .replace(/^(?!\.\.?\/)/, './');
-}
+        .relative(path.resolve(basePath, '..'), path.resolve(schemaPath.replace(/.ts$/, `.${importExtension}`)))
+        .replace(/\\/g, '/')
+        .replace(/^(?!\.\.?\/)/, './');
+};
 
 /**
  * Generets types file
