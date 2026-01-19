@@ -225,7 +225,7 @@ type TransformOperationsToReply<Ops, T extends keyof Ops> = Ops[T] extends { res
   ? {
       [StatusCode in keyof Responses]: Responses[StatusCode] extends { content: infer Content }
         ? ArrayToXor<RecordToTuple<Content>> // Flatten the `content` property
-        : Responses[StatusCode]; // Keep other properties unchanged
+        : never; // If content does not exist it should not be provided
     }
   : never;
 
@@ -278,6 +278,4 @@ export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/j
  * As TypeScript does not enforce return type of function (but provides suggestions) you should define your handles as follows:
  * `const myHandler: TypedHandlerBase = (req, reply): TypedResponseBase<Ops, T> => {`
  */
-export interface TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops, Content = 'application/json'> {
-  (req: TypedRequestBase<Ops, T, Content>, reply: TypedFastifyReply<Ops, T>): TypedResponseBase<Ops, T, Content>;
-}
+export type TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops, Content = 'application/json'> = (req: TypedRequestBase<Ops, T, Content>, reply: TypedFastifyReply<Ops, T>) => TypedResponseBase<Ops, T, Content>

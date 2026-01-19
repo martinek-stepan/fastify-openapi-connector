@@ -3,6 +3,11 @@
 ## Summary
 Typescript Node.js package for setting up Fastify based on OpenAPI specification with minimum dependencies.
 
+## Versions
+v1 - Fastify 4
+V2 - Fastify 5 < 5.7.1
+v3 - Fastify >= 5.7.1
+
 ## Installation
 ### JSR
 `npx jsr add @klexik/fastify-oas-connector`
