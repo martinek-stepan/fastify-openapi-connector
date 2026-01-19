@@ -59,8 +59,8 @@ jobs:
       - name: Publish to npm
         run: npm publish --provenance --access public
         working-directory: ${{ inputs.directory }}
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        #env:
+        #  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-jsr:
     needs:
