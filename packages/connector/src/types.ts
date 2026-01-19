@@ -278,4 +278,7 @@ export type TypedResponseBase<Ops, T extends keyof Ops, Content = 'application/j
  * As TypeScript does not enforce return type of function (but provides suggestions) you should define your handles as follows:
  * `const myHandler: TypedHandlerBase = (req, reply): TypedResponseBase<Ops, T> => {`
  */
-export type TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops, Content = 'application/json'> = (req: TypedRequestBase<Ops, T, Content>, reply: TypedFastifyReply<Ops, T>) => TypedResponseBase<Ops, T, Content>
+export type TypedHandlerBase<Ops = Record<string, unknown>, T extends keyof Ops = keyof Ops, Content = 'application/json'> = (
+  req: TypedRequestBase<Ops, T, Content>,
+  reply: TypedFastifyReply<Ops, T>,
+) => TypedResponseBase<Ops, T, Content>;
