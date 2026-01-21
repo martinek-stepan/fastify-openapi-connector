@@ -59,20 +59,33 @@ export const removeRefPrefix = (obj: unknown) => {
  * @param components Components object from the OpenAPI specification
  */
 export const registerComponents = (fastify: FastifyInstance, components?: Components): void => {
-  if (!components?.schemas) {
-    return;
-  }
+  if (components?.schemas) {
+    for (const [key, value] of Object.entries(components.schemas)) {
+      const filteredValue = structuredClone(value);
+      removeXtensions(filteredValue);
+      removeRefPrefix(filteredValue);
 
-  for (const [key, value] of Object.entries(components.schemas)) {
-    const filteredValue = structuredClone(value);
-    removeXtensions(filteredValue);
-    removeRefPrefix(filteredValue);
-
-    fastify.addSchema({
+      fastify.addSchema({
       // For some reason fastify can not deal with #/ prefix in response validation
-      $id: `components/schemas/${key}`,
+        $id: `components/schemas/${key}`,
       //$schema: "https://json-schema.org/draft/2020-12/schema",
-      ...filteredValue,
-    });
+        ...filteredValue,
+      });
+    }
   }
+
+  // Add response registration
+  if (components?.responses) {
+    for (const [key, value] of Object.entries(components.responses)) {
+      const filteredValue = structuredClone(value);
+      removeXtensions(filteredValue);
+      removeRefPrefix(filteredValue);
+      fastify.addSchema({
+        $id: `components/responses/${key}`,
+        ...filteredValue,
+      });
+    }
+  }
+
+  // TODO: implement other components per https://spec.openapis.org/oas/v3.1.0.html#components-object ?
 };

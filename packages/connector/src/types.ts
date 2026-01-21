@@ -56,9 +56,10 @@ export interface SecurityHandlers {
 /**
  * Dictionary of operation handlers, where key is operationId from OAS
  */
-export interface OperationHandlers<Ops = Record<string, unknown>, Content = 'application/json', T extends keyof Ops = keyof Ops> {
-  [resolverName: string]: TypedHandlerBase<Ops, T, Content> | undefined;
-}
+export type OperationHandlers<Ops = Record<string, unknown>, Content = 'application/json'> = {
+  [K in keyof Ops]?: TypedHandlerBase<Ops, K, Content>;
+};
+
 // Dictionary of "untyped" (using base FastifyRequest without typed body and paremeters) operation handlers, where key is operationId from OAS
 export interface OperationHandlersUntyped {
   // biome-ignore lint/suspicious/noExplicitAny: Fastify takes any response and serializes it to JSON.
@@ -72,12 +73,23 @@ export interface OperationHandlersUntyped {
 export type SecuritySpecification = {
   [securityHandlerName: string]: string[] | undefined;
 }[];
+
+/**
+ * Typed components response object of OAS
+ */
+export interface ResponseObject {
+  description: string;
+  headers?: Record<string, { schema: Record<string, unknown> }>;
+  content?: Record<string, { schema: Record<string, unknown> }>;
+}
+
 /**
  * Typed components section of OAS
  */
 export interface Components {
   parameters?: Record<string, SchemaParameter>;
   schemas?: Record<string, Record<string, unknown>>;
+  responses?: Record<string, ResponseObject>;
 }
 
 /**
