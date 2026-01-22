@@ -8,10 +8,9 @@
 	"scripts": {
 		"debug": "tsx --watch src/index.ts",
 		"generate:schema": "openapi-typescript --output ./src/generated/schema.ts ./openapi.yaml",
-		"generate:handlers": "fastify-oas-generator --schema-file ./src/generated/schema.ts --types-file ./src/generated/types.ts --service-file ./src/generated/service.ts --spec-file ./openapi.yaml --override-types-file --paths-dir ./src/routes --security-dir ./src/securityHandlers --webhooks-dir ./src/webhooks"
+		"generate:handlers": "tsx ../generator/src/cli.ts --schema-file ./src/generated/schema.ts --types-file ./src/generated/types.ts --service-file ./src/generated/service.ts --spec-file ./openapi.yaml --override-types-file --paths-dir ./src/routes --security-dir ./src/securityHandlers --webhooks-dir ./src/webhooks --use-path-tag-subfolders"
 	},
 	"dependencies": {
-		"fastify-openapi-connector-generator": "../generator",
 		"@redocly/openapi-core": "^1.34.2",
 		"fastify": "5",
 		"fastify-openapi-connector": "../connector"

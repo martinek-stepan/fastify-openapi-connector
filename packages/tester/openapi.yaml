@@ -13,8 +13,8 @@ servers:
   - url: http://localhost:3333
     description: Testing endpoint
 security:
-  - test-sec: [scope:yay-nay]
-
+  - test-sec:
+      - scope:yay-nay
 components:
   securitySchemes:
     test-sec:
@@ -22,8 +22,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
   parameters:
-    offsetParam: # <-- Arbitrary name for the definition that will be used to refer to it.
-      # Not necessarily the same as the parameter name.
+    offsetParam:
       in: query
       name: offset
       required: false
@@ -73,13 +72,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-
 paths:
   /health:
     get:
       operationId: healthGet
       summary: Health check endpoint with no parameters.
-      description: Used to test OperationHandlers type issue with mixed param/no-param operations.
+      description: Used to test OperationHandlers type issue with mixed param/no-param
+        operations.
       responses:
         "200":
           description: OK
@@ -93,25 +92,10 @@ paths:
                     example: healthy
         "500":
           $ref: "#/components/responses/InternalServerError"
-
-  /users:
-    get:
-      operationId: usersGet
-      summary: Gets a list of users.
-      parameters:
-        - $ref: "#/components/parameters/offsetParam"
-        - $ref: "#/components/parameters/limitParam"
-      responses:
-        "200":
-          description: OK
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
   /users/{userId}:
     get:
       operationId: userGet
+      x-codegen-path: users
       summary: Gets a single user by ID.
       parameters:
         - name: userId
@@ -126,10 +110,29 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalServerError"
-
+      tags:
+        - users
+  /users:
+    get:
+      operationId: usersGet
+      x-codegen-path: users
+      summary: Gets a list of users.
+      parameters:
+        - $ref: "#/components/parameters/offsetParam"
+        - $ref: "#/components/parameters/limitParam"
+      responses:
+        "200":
+          description: OK
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+      tags:
+        - users
   /teams:
     get:
       operationId: teamsGet
+      x-codegen-path: teams
       summary: Gets a list of teams.
       parameters:
         - $ref: "#/components/parameters/offsetParam"
@@ -143,7 +146,7 @@ paths:
             application/json:
               schema:
                 type: object
-                x-test: "test"
+                x-test: test
                 properties:
                   code:
                     type: integer
@@ -154,3 +157,10 @@ paths:
                 required:
                   - code
                   - message
+      tags:
+        - teams
+tags:
+  - name: users
+    description: User operations
+  - name: teams
+    description: ""

@@ -24,23 +24,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Gets a list of users. */
-        get: operations["usersGet"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/users/{userId}": {
         parameters: {
             query?: never;
@@ -50,6 +33,23 @@ export interface paths {
         };
         /** Gets a single user by ID. */
         get: operations["userGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets a list of users. */
+        get: operations["usersGet"];
         put?: never;
         post?: never;
         delete?: never;
@@ -151,6 +151,28 @@ export interface operations {
             500: components["responses"]["InternalServerError"];
         };
     };
+    userGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
     usersGet: {
         parameters: {
             query?: {
@@ -173,28 +195,6 @@ export interface operations {
                 content?: never;
             };
             400: components["responses"]["BadRequest"];
-            500: components["responses"]["InternalServerError"];
-        };
-    };
-    userGet: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                userId: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            404: components["responses"]["NotFound"];
             500: components["responses"]["InternalServerError"];
         };
     };

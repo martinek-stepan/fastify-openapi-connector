@@ -28,6 +28,14 @@ export interface OpenAPISpec {
 export type TemplateFunction = (imp: string, operationId: string, typesPath: string) => string;
 
 /**
+ * Handler info with optional subpath for subfolder organization
+ */
+export interface HandlerInfo {
+  operationId: string;
+  subpath?: string;
+}
+
+/**
  * Function to generate handler files
  * @param imp operationId
  * @param typesPath path to types file
@@ -77,8 +85,8 @@ export const parseAndGenerateOperationHandlers = async (args: {
   typesPath: string;
   typed: boolean;
   importExtension: string;
-}): Promise<string[]> => {
-  const operationIds: string[] = [];
+}): Promise<HandlerInfo[]> => {
+  const handlers: HandlerInfo[] = [];
 
   for (const pathObj of Object.values(args.paths)) {
     if (typeof pathObj !== 'object' || pathObj === null) {
@@ -94,17 +102,20 @@ export const parseAndGenerateOperationHandlers = async (args: {
         continue;
       }
 
-      operationIds.push(operationId);
+      // Use x-codegen-path extension for custom subfolder path
+      const subpath = (operationObj as { 'x-codegen-path'?: string })['x-codegen-path'];
+
+      handlers.push({ operationId, subpath });
     }
   }
 
   await generateHandlerFiles({
-    handlerNames: operationIds,
+    handlers,
     path: args.filesPath,
-    typesPath: args.typesPath.replace(/.ts$/, `.${args.importExtension}`).replace(/^(?!\.\.?\/)/, './'),
+    typesPath: args.typesPath.replace(/.ts$/, `.${args.importExtension}`),
     templateFunction: args.typed ? routeTemplateTyped : routeTemplateUntyped,
   });
-  return operationIds;
+  return handlers;
 };
 
 /**
@@ -115,25 +126,25 @@ export const parseAndGenerateOperationHandlers = async (args: {
 export const parseAndGenerateSecurity = async (args: {
   security: Record<string, unknown>;
   filesPath: string;
-}): Promise<string[]> => {
-  const securityNames: string[] = [];
+}): Promise<HandlerInfo[]> => {
+  const handlers: HandlerInfo[] = [];
 
   for (const security of Object.keys(args.security)) {
     if (security.startsWith('x-')) {
       continue;
     }
 
-    securityNames.push(security);
+    handlers.push({ operationId: security });
   }
 
   await generateHandlerFiles({
-    handlerNames: securityNames,
+    handlers,
     path: args.filesPath,
     typesPath: '',
     templateFunction: securityTemplate,
   });
 
-  return securityNames;
+  return handlers;
 };
 
 /**
@@ -152,12 +163,12 @@ export const generate = async (args: {
   overrideTypesFile: boolean;
   importExtension: string;
 }): Promise<void> => {
-  let pathOperationIds: string[] | undefined;
-  let webhookOperationIds: string[] | undefined;
-  let securityNames: string[] | undefined;
+  let pathHandlers: HandlerInfo[] | undefined;
+  let webhookHandlers: HandlerInfo[] | undefined;
+  let securityHandlers: HandlerInfo[] | undefined;
 
   if (args.spec.paths && args.routesPath) {
-    pathOperationIds = await parseAndGenerateOperationHandlers({
+    pathHandlers = await parseAndGenerateOperationHandlers({
       filesPath: args.routesPath,
       typesPath: args.typesPath,
       paths: args.spec.paths,
@@ -167,7 +178,7 @@ export const generate = async (args: {
   }
 
   if (args.spec.webhooks && args.webhooksPath) {
-    webhookOperationIds = await parseAndGenerateOperationHandlers({
+    webhookHandlers = await parseAndGenerateOperationHandlers({
       filesPath: args.webhooksPath,
       typesPath: args.typesPath,
       paths: args.spec.webhooks,
@@ -177,7 +188,7 @@ export const generate = async (args: {
   }
 
   if (args.spec.components?.securitySchemes && args.securityPath) {
-    securityNames = await parseAndGenerateSecurity({
+    securityHandlers = await parseAndGenerateSecurity({
       filesPath: args.securityPath,
       security: args.spec.components.securitySchemes,
     });
@@ -186,9 +197,9 @@ export const generate = async (args: {
   generateTypesFile(args.typesPath, args.schemaFilePath, args.overrideTypesFile, args.importExtension);
   generateServiceFile({
     servicePath: args.servicePath,
-    pathHandlerNames: pathOperationIds,
-    webhookHandlerNames: webhookOperationIds,
-    securityHandlerNames: securityNames,
+    pathHandlers,
+    webhookHandlers,
+    securityHandlers,
     routesPath: args.routesPath,
     webhooksPath: args.webhooksPath,
     securityPath: args.securityPath,
@@ -204,7 +215,7 @@ export const generate = async (args: {
  * @param args setup arguments
  */
 export const generateHandlerFiles = async (args: {
-  handlerNames: string[];
+  handlers: HandlerInfo[];
   path: string;
   typesPath: string;
   templateFunction: TemplateFunction;
@@ -213,23 +224,44 @@ export const generateHandlerFiles = async (args: {
     mkdirSync(args.path, { recursive: true });
   }
 
-  const files: string[] = (
-    await glob(path.resolve(args.path, '*.ts'), {
-      windowsPathsNoEscape: true,
-    })
-  ).map((file) => path.basename(file, '.ts'));
+  // Collect all existing files including those in subfolders
+  const files: Map<string, boolean> = new Map();
+  const existingFiles = await glob(path.resolve(args.path, '**/*.ts'), {
+    windowsPathsNoEscape: true,
+  });
+  for (const file of existingFiles) {
+    const relativePath = path.relative(args.path, file).replace(/\\/g, '/').replace(/.ts$/, '');
+    files.set(relativePath, true);
+  }
 
-  // All operation ids must have an implementation
-  const missingImplementations = args.handlerNames.filter((name) => !files.includes(name));
+  // Find missing implementations
+  const missingImplementations = args.handlers.filter((handler) => {
+    const filePath = handler.subpath ? `${handler.subpath}/${handler.operationId}` : handler.operationId;
+    return !files.has(filePath);
+  });
 
   if (missingImplementations.length) {
     console.log('These operations are missing an implementation:');
-    console.log(missingImplementations);
+    console.log(missingImplementations.map((h) => h.operationId));
 
-    const relative = path.relative(path.resolve(args.path), path.resolve(args.typesPath)).replace(/\\/g, '/');
+    for (const handler of missingImplementations) {
+      const subFolder = handler.subpath ? path.join(args.path, handler.subpath) : args.path;
 
-    for (const operationId of missingImplementations) {
-      writeFileSync(path.join(args.path, `${operationId}.ts`), args.templateFunction(camelCase(operationId), operationId, relative));
+      // Create subfolder if needed
+      if (handler.subpath && !existsSync(subFolder)) {
+        mkdirSync(subFolder, { recursive: true });
+      }
+
+      // Calculate relative path from handler file to types file
+      const typesRelative = path
+        .relative(subFolder, path.resolve(args.typesPath))
+        .replace(/\\/g, '/')
+        .replace(/^(?!\.\.?\/)/, './');
+
+      writeFileSync(
+        path.join(subFolder, `${handler.operationId}.ts`),
+        args.templateFunction(camelCase(handler.operationId), handler.operationId, typesRelative),
+      );
     }
   }
 };
@@ -240,18 +272,19 @@ export const generateHandlerFiles = async (args: {
  * @returns handler imports
  */
 export const generateHandlerImports = (args: {
-  handlerNames: string[];
+  handlers: HandlerInfo[];
   path: string;
   servicePath: string;
   importExtension: string;
 }): string[] => {
-  return args.handlerNames.map((name) => {
-    const handlerPath = path.relative(path.resolve(args.servicePath, '..'), path.resolve(args.path));
+  return args.handlers.map((handler) => {
+    const subPath = handler.subpath ? path.join(args.path, handler.subpath) : args.path;
+    const handlerPath = path.relative(path.resolve(args.servicePath, '..'), path.resolve(subPath));
     const importPath = path
-      .join(handlerPath, `${name}.${args.importExtension}'`)
+      .join(handlerPath, `${handler.operationId}.${args.importExtension}'`)
       .replace(/\\/g, '/')
       .replace(/^(?!\.\.?\/)/, './');
-    return `import { ${camelCase(name)} } from '${importPath};`;
+    return `import { ${camelCase(handler.operationId)} } from '${importPath};`;
   });
 };
 
@@ -260,7 +293,7 @@ export const generateHandlerImports = (args: {
  */
 export interface OrganizedHandlers {
   path?: string;
-  handlers?: string[];
+  handlers?: HandlerInfo[];
   exportName: string;
   typeName: string;
   importType: string;
@@ -332,9 +365,9 @@ export type TypedHandler<T extends keyof operations> = TypedHandlerBase<operatio
  * @param args setup arguments
  */
 export const generateServiceFile = (args: {
-  pathHandlerNames?: string[];
-  webhookHandlerNames?: string[];
-  securityHandlerNames?: string[];
+  pathHandlers?: HandlerInfo[];
+  webhookHandlers?: HandlerInfo[];
+  securityHandlers?: HandlerInfo[];
   routesPath?: string;
   webhooksPath?: string;
   securityPath?: string;
@@ -348,21 +381,21 @@ export const generateServiceFile = (args: {
   const organizedHandlers: OrganizedHandlers[] = [
     {
       path: args.routesPath,
-      handlers: args.pathHandlerNames,
+      handlers: args.pathHandlers,
       exportName: 'pathHandlers',
       typeName: args.typed ? 'OperationHandlers<operations>' : 'OperationHandlersUntyped',
       importType: args.typed ? 'OperationHandlers' : 'OperationHandlersUntyped',
     },
     {
       path: args.webhooksPath,
-      handlers: args.webhookHandlerNames,
+      handlers: args.webhookHandlers,
       exportName: 'webhookHandlers',
       typeName: args.typed ? 'OperationHandlers<operations>' : 'OperationHandlersUntyped',
       importType: args.typed ? 'OperationHandlers' : 'OperationHandlersUntyped',
     },
     {
       path: args.securityPath,
-      handlers: args.securityHandlerNames,
+      handlers: args.securityHandlers,
       exportName: 'securityHandlers',
       typeName: 'SecurityHandlers',
       importType: 'SecurityHandlers',
@@ -373,15 +406,15 @@ export const generateServiceFile = (args: {
   const typeImports: Set<string> = new Set();
   const exports: string[] = [];
 
-  for (const { path, handlers, exportName, typeName, importType } of organizedHandlers) {
-    if (!path || !handlers) {
+  for (const { path: handlerPath, handlers, exportName, typeName, importType } of organizedHandlers) {
+    if (!handlerPath || !handlers) {
       continue;
     }
 
     imports = imports.concat(
       generateHandlerImports({
-        handlerNames: handlers,
-        path: path,
+        handlers,
+        path: handlerPath,
         servicePath: args.servicePath,
         importExtension: args.importExtension,
       }),
@@ -390,7 +423,7 @@ export const generateServiceFile = (args: {
     typeImports.add(importType);
     exports.push(
       `export const ${exportName}: ${typeName} = {
-${handlers.map((name) => `  '${name}': ${camelCase(name)}`).join(',\n')},
+${handlers.map((h) => `  '${h.operationId}': ${camelCase(h.operationId)}`).join(',\n')},
 };`,
     );
   }

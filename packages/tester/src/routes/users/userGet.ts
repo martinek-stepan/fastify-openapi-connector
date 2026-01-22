@@ -1,4 +1,4 @@
-import type { TypedHandler, TypedResponseAsync } from '../generated/types.js';
+import type { TypedHandler, TypedResponseAsync } from '../../generated/types.js';
 
 export const userGet: TypedHandler<'userGet'> = async (req, reply): TypedResponseAsync<'userGet'> => {
   console.log(req.query);
