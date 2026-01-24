@@ -1,14 +1,6 @@
 import type { FastifySchema } from 'fastify';
-import { removeRefPrefix, removeXtensions } from './components.js';
+import { removeXtensions } from './removeXtensions.js';
 import type { ParsedParameter, SchemaParametersIn, SpecResponse } from './types.js';
-
-const cleanSchema = <T extends object>(value: T): T => {
-  const filteredValue = structuredClone(value);
-  removeXtensions(filteredValue);
-  removeRefPrefix(filteredValue);
-
-  return filteredValue;
-};
 
 /**
  * Helper function to create route schema from the OpenAPI specification
@@ -37,23 +29,23 @@ export const createRouteSchema = (
   const schema: FastifySchema = {};
 
   if (bodySchema) {
-    schema.body = cleanSchema(bodySchema);
+    schema.body = removeXtensions(bodySchema);
   }
 
   if (params.query) {
-    schema.querystring = cleanSchema(params.query);
+    schema.querystring = removeXtensions(params.query);
   }
 
   if (params.path) {
-    schema.params = cleanSchema(params.path);
+    schema.params = removeXtensions(params.path);
   }
 
   if (params.header) {
-    schema.headers = cleanSchema(params.header);
+    schema.headers = removeXtensions(params.header);
   }
 
   if (validateResponse === true && responses) {
-    schema.response = cleanSchema(responses);
+    schema.response = removeXtensions(responses);
   }
 
   return schema;

@@ -8,7 +8,7 @@ info:
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  version: 0.0.2
+  version: 0.0.3
 servers:
   - url: http://localhost:3333
     description: Testing endpoint
@@ -42,19 +42,58 @@ components:
         default: 20
       description: The numbers of items to return.
   schemas:
-    fail:
+    Error:
       type: object
       properties:
         code:
           type: integer
-          example: 404
+          example: 400
         message:
           type: string
-          example: Not Found
+          example: Bad Request
       required:
         - code
         - message
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
 paths:
+  /health:
+    get:
+      operationId: healthGet
+      summary: Health check endpoint with no parameters.
+      description: Used to test OperationHandlers type issue with mixed param/no-param operations.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /users:
     get:
       operationId: usersGet
@@ -65,12 +104,29 @@ paths:
       responses:
         "200":
           description: OK
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/fail"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /users/{userId}:
+    get:
+      operationId: userGet
+      summary: Gets a single user by ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
   /teams:
     get:
       operationId: teamsGet
@@ -81,7 +137,7 @@ paths:
       responses:
         "200":
           description: OK
-        '500':
+        "500":
           description: Internal Server Error
           content:
             application/json:
@@ -94,7 +150,7 @@ paths:
                     example: 500
                   message:
                     type: string
-                    example: Not Found
+                    example: Internal Server Error
                 required:
                   - code
                   - message

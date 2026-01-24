@@ -1,21 +1,24 @@
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
-import { registerComponents } from './components.js';
 import { determinePrefix } from './determinePrefix.js';
 import { setupRoutes } from './setupRoutes.js';
 import type { Options } from './types.js';
+import { resolveRefs } from './referenceResolver.js';
 
 // define plugin using promises
 const myPluginAsync: FastifyPluginAsync<Options> = async (
   fastify,
   { openApiSpecification, securityHandlers, operationHandlers, settings },
 ) => {
-  const { components = {}, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
+
+  // Dereferences all $ref in the OAS to simplify further processing
+  const dereferencedOAS = resolveRefs(openApiSpecification);
+
+  const { components = {}, security: globalSecurity, paths, webhooks, servers } = dereferencedOAS;
 
   const prefix = determinePrefix(fastify, settings, servers);
 
   const setupRoutesAndValidation = async (fastify: FastifyInstance): Promise<void> => {
-    registerComponents(fastify, components);
 
     if (settings?.initializePaths !== false && paths) {
       setupRoutes(

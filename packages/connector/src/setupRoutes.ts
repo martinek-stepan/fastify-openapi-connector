@@ -9,7 +9,6 @@ import type {
   OperationHandlersUntyped,
   Paths,
   PathsMap,
-  ReferenceObject,
   SecurityHandlers,
   SecuritySpecification,
   SpecResponse,
@@ -69,11 +68,6 @@ export const setupRoutes = (
   for (const [path, pathObject] of Object.entries(routesInfo.paths)) {
     let url = path;
     if (settings.isWebhook) {
-      if ('$ref' in (pathObject as ReferenceObject | Paths)) {
-        fastify.log.error(`Webhook path ${path} is a reference, references need to be resolved for the plugin to work!`);
-        continue;
-      }
-
       if (!path.startsWith('/')) {
         fastify.log.warn(`Webhook path ${path} does not start with a slash, slash will be added.`);
         url = `/${url}`;

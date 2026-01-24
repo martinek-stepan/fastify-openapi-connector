@@ -33,6 +33,7 @@ import { pathHandlers, securityHandlers } from './generated/service.ts';
   const options: Options<operations> = {
     openApiSpecification: spec,
     operationHandlers: pathHandlers,
+    securityHandlers: securityHandlers,
     settings: {
       initializePaths: true,
       useXSecurity: true,
