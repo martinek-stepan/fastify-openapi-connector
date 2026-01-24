@@ -1,4 +1,4 @@
-import { removeXtensions } from './components.js';
+import { removeXtensions } from './removeXtensions.js';
 import type { ParsedParameter, ReferenceObject, SchemaParameter, SchemaParametersIn } from './types.js';
 
 const schemaParamPrefixLength = '#/components/parameters/'.length;
@@ -34,8 +34,7 @@ export const parseParams = (
       properties: {},
     };
 
-    const filteredSchema = structuredClone(item.schema);
-    removeXtensions(filteredSchema);
+    const filteredSchema = removeXtensions(item.schema);
 
     param.properties[item.name] = {
       ...filteredSchema,
