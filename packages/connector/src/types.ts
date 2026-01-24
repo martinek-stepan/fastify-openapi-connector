@@ -75,21 +75,11 @@ export type SecuritySpecification = {
 }[];
 
 /**
- * Typed components response object of OAS
- */
-export interface ResponseObject {
-  description: string;
-  headers?: Record<string, { schema: Record<string, unknown> }>;
-  content?: Record<string, { schema: Record<string, unknown> }>;
-}
-
-/**
  * Typed components section of OAS
  */
 export interface Components {
   parameters?: Record<string, SchemaParameter>;
   schemas?: Record<string, Record<string, unknown>>;
-  responses?: Record<string, ResponseObject>;
 }
 
 /**
