@@ -1,7 +1,5 @@
 import { removeXtensions } from './removeXtensions.js';
-import type { ParsedParameter, ReferenceObject, SchemaParameter, SchemaParametersIn } from './types.js';
-
-const schemaParamPrefixLength = '#/components/parameters/'.length;
+import type { ParsedParameter, SchemaParameter, SchemaParametersIn } from './types.js';
 
 /**
  * Helper function to parse parameters from the OpenAPI specification
@@ -10,7 +8,7 @@ const schemaParamPrefixLength = '#/components/parameters/'.length;
  * @returns Parameters parameters object
  */
 export const parseParams = (
-  data: (SchemaParameter | ReferenceObject)[],
+  data: (SchemaParameter)[],
   schemaParameters: Record<string, SchemaParameter>,
   params: Record<SchemaParametersIn, ParsedParameter | undefined> = {
     query: undefined,
@@ -20,10 +18,6 @@ export const parseParams = (
   },
 ): Record<SchemaParametersIn, ParsedParameter | undefined> => {
   for (let item of data) {
-    if ('$ref' in item) {
-      // resolve $ref
-      item = schemaParameters[item.$ref.substring(schemaParamPrefixLength)];
-    }
     if (item.in === 'cookie') {
       console.warn('cookie parameters are not supported in fastify, will be ignored...');
       continue;

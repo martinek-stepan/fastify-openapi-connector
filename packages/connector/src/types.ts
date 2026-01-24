@@ -134,7 +134,7 @@ export interface SpecResponse {
  */
 export interface PathOperation {
   operationId?: string;
-  parameters?: (SchemaParameter | ReferenceObject)[];
+  parameters?: (SchemaParameter)[];
   requestBody: unknown;
   security?: SecuritySpecification;
   responses?: SpecResponse;
@@ -181,15 +181,6 @@ export interface ParsedParameter {
     };
   };
   required?: string[];
-}
-
-/**
- * Typed reference object of OAS
- */
-export interface ReferenceObject {
-  $ref: string;
-  summary?: string;
-  description?: string;
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: We want dynamic type here, to do some typescript magic
