@@ -1,6 +1,15 @@
 import type { FastifyContextConfig, FastifyReply, FastifyRequest, FastifyRequestContext, RouteHandler } from 'fastify';
 
 /**
+ * Augmenting the RouteOptions interface to include operationId
+ */
+declare module 'fastify' {
+  interface RouteOptions {
+    operationId?: string;
+  }
+}
+
+/**
  * Settings used to determine prefix from servers section of OAS
  */
 export interface PrefixExtractingSettings {

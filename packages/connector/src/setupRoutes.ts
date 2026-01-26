@@ -119,6 +119,7 @@ export const setupRoutes = (
         // fastify wants 'path/:param' instead of openapis 'path/{param}'
         url: url.replace(/{(\w+)}/g, ':$1'),
         handler,
+        operationId,
         config: operationValues['x-fastify-config'],
         schema: createRouteSchema(
           operationParams,
