@@ -4,7 +4,6 @@ info:
   description: API for testing fastify-openapi-connector
   contact:
     name: Stepan Martinek
-    email: stepan.martinek@lego.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT

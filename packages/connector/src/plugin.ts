@@ -1,9 +1,9 @@
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
 import { determinePrefix } from './determinePrefix.js';
+import { resolveRefs } from './referenceResolver.js';
 import { setupRoutes } from './setupRoutes.js';
 import type { Options } from './types.js';
-import { resolveRefs } from './referenceResolver.js';
 
 // define plugin using promises
 const myPluginAsync: FastifyPluginAsync<Options> = async (
@@ -11,10 +11,7 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
   { openApiSpecification, securityHandlers, operationHandlers, settings },
 ) => {
 
-  // Dereferences all $ref in the OAS to simplify further processing
-  const dereferencedOAS = resolveRefs(openApiSpecification);
-
-  const { components = {}, security: globalSecurity, paths, webhooks, servers } = dereferencedOAS;
+  const { components = {}, security: globalSecurity, paths, webhooks, servers } = settings?.dereferenceOAS === false ? openApiSpecification : resolveRefs(openApiSpecification);
 
   const prefix = determinePrefix(fastify, settings, servers);
 

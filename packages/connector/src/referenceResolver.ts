@@ -5,11 +5,13 @@
  * @throws Error if a reference path is invalid or not found
  */
 
-function resolveRefs<T>(schema: T): T {
+export const resolveRefs = <T>(schema: T): T => {
   const resolveRef = (refPath: string): unknown => {
     const parts = refPath.replace(/^#\//, '').split('/');
     let current: unknown = schema;
 
+    // Go part by part through the reference path to find the referenced object
+    // #/components/schemas/Pet -> { compontents: { schemas: { Pet: { ... } } }
     for (const part of parts) {
       if (current === null || typeof current !== 'object' || Array.isArray(current)) {
         throw new Error(`Invalid reference path: ${refPath}`);
@@ -23,11 +25,14 @@ function resolveRefs<T>(schema: T): T {
     return current;
   };
 
+  // Recursively goes through the schema object to resolve all $ref pointers
   const resolve = (obj: unknown): unknown => {
+    // Base case: if obj is not an object or is null, return it as is
     if (obj === null || typeof obj !== 'object') {
       return obj;
     }
 
+    // Resolve each item in an array
     if (Array.isArray(obj)) {
       return obj.map(resolve);
     }
@@ -45,5 +50,3 @@ function resolveRefs<T>(schema: T): T {
 
   return resolve(schema) as T;
 }
-
-export { resolveRefs };
