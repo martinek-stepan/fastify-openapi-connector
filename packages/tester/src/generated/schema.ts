@@ -3,68 +3,293 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/users": {
-    /** Gets a list of users. */
-    get: operations["usersGet"];
-  };
-  "/teams": {
-    /** Gets a list of teams. */
-    get: operations["teamsGet"];
-  };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets a list of users. */
+        get: operations["usersGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets a list of teams. */
+        get: operations["teamsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getItems"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/item/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getItem"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/documents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Documents */
+        get: operations["getDocuments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: never;
-  responses: never;
-  parameters: {
-    /** @description The number of items to skip before starting to collect the result set. */
-    offsetParam?: number;
-    /** @description The numbers of items to return. */
-    limitParam?: number;
-  };
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    schemas: {
+        fail: {
+            /** @example 404 */
+            code: number;
+            /** @example Not Found */
+            message: string;
+        };
+        Document: {
+            id?: string;
+        };
+    };
+    responses: {
+        /** @description Unauthorized access. Authentication is required and has failed or has not yet been provided. */
+        Unauthorized: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @example Lorem ipsum */
+                    message: string;
+                };
+            };
+        };
+        /** @description The server could not understand the request due to invalid syntax. The client should modify the request and try again. */
+        BadRequest: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @example Lorem ipsum */
+                    message: string;
+                };
+            };
+        };
+        /** @description Internal Server Error */
+        InternalServerError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": {
+                    /** @example 500 */
+                    code: number;
+                    /** @example Not Found */
+                    message: string;
+                };
+            };
+        };
+    };
+    parameters: {
+        /** @description Filter the list of books according to the title. */
+        filter: string;
+        /** @description The number of items to skip before starting to collect the result set. */
+        offsetParam: number;
+        /** @description The numbers of items to return. */
+        limitParam: number;
+    };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
-
-  /** Gets a list of users. */
-  usersGet: {
-    parameters: {
-      query?: {
-        offset?: components["parameters"]["offsetParam"];
-        limit?: components["parameters"]["limitParam"];
-      };
+    usersGet: {
+        parameters: {
+            query?: {
+                /** @description The number of items to skip before starting to collect the result set. */
+                offset?: components["parameters"]["offsetParam"];
+                /** @description The numbers of items to return. */
+                limit?: components["parameters"]["limitParam"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Bad Request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["fail"];
+                };
+            };
+        };
     };
-    responses: {
-      /** @description OK */
-      200: {
-        content: never;
-      };
+    teamsGet: {
+        parameters: {
+            query?: {
+                /** @description The number of items to skip before starting to collect the result set. */
+                offset?: components["parameters"]["offsetParam"];
+                /** @description The numbers of items to return. */
+                limit?: components["parameters"]["limitParam"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 500 */
+                        code: number;
+                        /** @example Not Found */
+                        message: string;
+                    };
+                };
+            };
+        };
     };
-  };
-  /** Gets a list of teams. */
-  teamsGet: {
-    parameters: {
-      query?: {
-        offset?: components["parameters"]["offsetParam"];
-        limit?: components["parameters"]["limitParam"];
-      };
+    getItems: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of items */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string[];
+                };
+            };
+        };
     };
-    responses: {
-      /** @description OK */
-      200: {
-        content: never;
-      };
+    getItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Single item */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": string;
+                };
+            };
+        };
     };
-  };
+    getDocuments: {
+        parameters: {
+            query?: {
+                /** @description Filter the list of books according to the title. */
+                filter?: components["parameters"]["filter"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Documents retrieved successfully. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Document"][];
+                };
+            };
+            400: components["responses"]["BadRequest"];
+            401: components["responses"]["Unauthorized"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
 }
