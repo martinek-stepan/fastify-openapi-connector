@@ -113,6 +113,7 @@ paths:
       tags:
         - users
   /users:
+    x-codegen-path: teams
     get:
       operationId: usersGet
       x-codegen-path: users
@@ -130,9 +131,9 @@ paths:
       tags:
         - users
   /teams:
+    x-codegen-path: teams
     get:
       operationId: teamsGet
-      x-codegen-path: teams
       summary: Gets a list of teams.
       parameters:
         - $ref: "#/components/parameters/offsetParam"

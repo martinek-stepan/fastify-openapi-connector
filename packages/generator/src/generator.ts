@@ -92,6 +92,12 @@ export const parseAndGenerateOperationHandlers = async (args: {
     if (typeof pathObj !== 'object' || pathObj === null) {
       continue;
     }
+    
+    // Use x-codegen-path extension for custom subfolder path
+    let subpath: string | undefined;
+    if ('x-codegen-path' in pathObj && typeof pathObj['x-codegen-path'] === 'string') {
+      subpath = pathObj['x-codegen-path'];
+    }
 
     for (const operationObj of Object.values(pathObj)) {
       if (typeof operationObj !== 'object' || operationObj === null) {
@@ -103,7 +109,9 @@ export const parseAndGenerateOperationHandlers = async (args: {
       }
 
       // Use x-codegen-path extension for custom subfolder path
-      const subpath = (operationObj as { 'x-codegen-path'?: string })['x-codegen-path'];
+      if ('x-codegen-path' in operationObj && typeof operationObj['x-codegen-path'] === 'string') {
+        subpath = operationObj['x-codegen-path'];
+      }
 
       handlers.push({ operationId, subpath });
     }
