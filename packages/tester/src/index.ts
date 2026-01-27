@@ -26,7 +26,7 @@ import { pathHandlers, securityHandlers } from './generated/service.ts';
   const config = await createConfig({
     extends: ['minimal']
   });
-  const bundleResults = await bundle({ config, ref: './openapi.yaml' });
+  const bundleResults = await bundle({ config, ref: './openapi.yaml'});
 
   const spec = bundleResults.bundle.parsed as OpenAPISpec;
 
@@ -36,7 +36,7 @@ import { pathHandlers, securityHandlers } from './generated/service.ts';
     settings: {
       initializePaths: true,
       useXSecurity: true,
-      validateResponses: true,
+      validateResponses: true
     },
   };
 

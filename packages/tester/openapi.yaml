@@ -14,45 +14,6 @@ servers:
 security:
   - test-sec: [scope:yay-nay]
 
-components:
-  securitySchemes:
-    test-sec:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  parameters:
-    offsetParam: # <-- Arbitrary name for the definition that will be used to refer to it.
-      # Not necessarily the same as the parameter name.
-      in: query
-      name: offset
-      required: false
-      schema:
-        type: integer
-        minimum: 0
-      description: The number of items to skip before starting to collect the result set.
-    limitParam:
-      in: query
-      name: limit
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 50
-        default: 20
-      description: The numbers of items to return.
-  schemas:
-    fail:
-      type: object
-      properties:
-        code:
-          type: integer
-          example: 404
-        message:
-          type: string
-          example: Not Found
-      required:
-        - code
-        - message
 paths:
   /users:
     get:
@@ -72,6 +33,7 @@ paths:
                 $ref: "#/components/schemas/fail"
   /teams:
     get:
+      security: []
       operationId: teamsGet
       summary: Gets a list of teams.
       parameters:
@@ -97,3 +59,157 @@ paths:
                 required:
                   - code
                   - message
+  /items:
+    get:
+      operationId: getItems
+      responses:
+        "200":
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /item/{id}:
+    get:
+      operationId: getItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Single item
+          content:
+            application/json:
+              schema:
+                type: string
+  /documents:
+    get:
+      security: []
+      operationId: getDocuments
+      summary: Get Documents
+      responses:
+        "200":
+          description: Documents retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+                title: GetDocumentsOk
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+      parameters:
+        - $ref: "#/components/parameters/filter"
+
+components:
+  securitySchemes:
+    test-sec:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    fail:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: Not Found
+      required:
+        - code
+        - message
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: Unauthorized access. Authentication is required and has failed or has
+        not yet been provided.
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: The server could not understand the request due to invalid syntax.
+        The client should modify the request and try again.
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            x-test: "test"
+            properties:
+              code:
+                type: integer
+                example: 500
+              message:
+                type: string
+                example: Not Found
+            required:
+              - code
+              - message
+  parameters:
+    filter:
+      in: query
+      name: filter
+      style: form
+      schema:
+        type: string
+        examples:
+          - Pride and Prejudice
+          - Moby-Dick
+      explode: false
+      required: false
+      description: Filter the list of books according to the title.
+    offsetParam: # <-- Arbitrary name for the definition that will be used to refer to it.
+      # Not necessarily the same as the parameter name.
+      in: query
+      name: offset
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+      description: The number of items to skip before starting to collect the result set.
+    limitParam:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+      description: The numbers of items to return.
