@@ -3,68 +3,236 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
-  "/users": {
-    /** Gets a list of users. */
-    get: operations["usersGet"];
-  };
-  "/teams": {
-    /** Gets a list of teams. */
-    get: operations["teamsGet"];
-  };
+    "/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Health check endpoint with no parameters.
+         * @description Used to test OperationHandlers type issue with mixed param/no-param operations.
+         */
+        get: operations["healthGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users/{userId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets a single user by ID. */
+        get: operations["userGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets a list of users. */
+        get: operations["usersGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/teams": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets a list of teams. */
+        get: operations["teamsGet"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
-
 export type webhooks = Record<string, never>;
-
 export interface components {
-  schemas: never;
-  responses: never;
-  parameters: {
-    /** @description The number of items to skip before starting to collect the result set. */
-    offsetParam?: number;
-    /** @description The numbers of items to return. */
-    limitParam?: number;
-  };
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    schemas: {
+        Error: {
+            /** @example 400 */
+            code: number;
+            /** @example Bad Request */
+            message: string;
+        };
+    };
+    responses: {
+        /** @description Bad Request */
+        BadRequest: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Not Found */
+        NotFound: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+        /** @description Internal Server Error */
+        InternalServerError: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                "application/json": components["schemas"]["Error"];
+            };
+        };
+    };
+    parameters: {
+        /** @description The number of items to skip before starting to collect the result set. */
+        offsetParam: number;
+        /** @description The numbers of items to return. */
+        limitParam: number;
+    };
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
-
 export type $defs = Record<string, never>;
-
-export type external = Record<string, never>;
-
 export interface operations {
-
-  /** Gets a list of users. */
-  usersGet: {
-    parameters: {
-      query?: {
-        offset?: components["parameters"]["offsetParam"];
-        limit?: components["parameters"]["limitParam"];
-      };
+    healthGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example healthy */
+                        status?: string;
+                    };
+                };
+            };
+            500: components["responses"]["InternalServerError"];
+        };
     };
-    responses: {
-      /** @description OK */
-      200: {
-        content: never;
-      };
+    userGet: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                userId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            404: components["responses"]["NotFound"];
+            500: components["responses"]["InternalServerError"];
+        };
     };
-  };
-  /** Gets a list of teams. */
-  teamsGet: {
-    parameters: {
-      query?: {
-        offset?: components["parameters"]["offsetParam"];
-        limit?: components["parameters"]["limitParam"];
-      };
+    usersGet: {
+        parameters: {
+            query?: {
+                /** @description The number of items to skip before starting to collect the result set. */
+                offset?: components["parameters"]["offsetParam"];
+                /** @description The numbers of items to return. */
+                limit?: components["parameters"]["limitParam"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            400: components["responses"]["BadRequest"];
+            500: components["responses"]["InternalServerError"];
+        };
     };
-    responses: {
-      /** @description OK */
-      200: {
-        content: never;
-      };
+    teamsGet: {
+        parameters: {
+            query?: {
+                /** @description The number of items to skip before starting to collect the result set. */
+                offset?: components["parameters"]["offsetParam"];
+                /** @description The numbers of items to return. */
+                limit?: components["parameters"]["limitParam"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Internal Server Error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 500 */
+                        code: number;
+                        /** @example Internal Server Error */
+                        message: string;
+                    };
+                };
+            };
+        };
     };
-  };
 }

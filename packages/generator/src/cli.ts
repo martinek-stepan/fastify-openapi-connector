@@ -18,6 +18,10 @@ const HELP = `Usage
   --untyped                  [Optional] Indicates that generated handlers should be untyped.
   --override-types-file      [Optional] Indicates that types file should be overrided if exists.
   --import-extension         [Optional] Import extension of js/ts files. Default is 'js'
+
+ OpenAPI Extensions:
+  x-codegen-path             [Optional] Add to operation to organize handler into subfolder.
+                             Example: x-codegen-path: "users" -> handlers/users/operationId.ts
 `;
 
 const [, , ...args] = process.argv;
