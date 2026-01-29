@@ -92,7 +92,7 @@ export const parseAndGenerateOperationHandlers = async (args: {
     if (typeof pathObj !== 'object' || pathObj === null) {
       continue;
     }
-    
+
     // Use x-codegen-path extension for custom subfolder path
     let subpath: string | undefined;
     if ('x-codegen-path' in pathObj && typeof pathObj['x-codegen-path'] === 'string') {
