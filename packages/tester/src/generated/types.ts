@@ -1,5 +1,5 @@
 import type { TypedRequestBase, TypedHandlerBase, TypedResponseBase, TypedResponseBaseSync, TypedResponseBaseAsync } from 'fastify-openapi-connector';
-import type { operations } from './schema.js';
+import type { operations } from './schema.ts';
 
 export type TypedRequest<T extends keyof operations> = TypedRequestBase<operations, T>;  
 export type TypedResponse<T extends keyof operations> = TypedResponseBase<operations, T>;

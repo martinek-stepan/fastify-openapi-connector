@@ -11,8 +11,13 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
   fastify,
   { openApiSpecification, securityHandlers, operationHandlers, settings },
 ) => {
-
-  const { components = {}, security: globalSecurity, paths, webhooks, servers } = settings?.dereferenceOAS === false ? openApiSpecification : resolveRefs(openApiSpecification);
+  const {
+    components = {},
+    security: globalSecurity,
+    paths,
+    webhooks,
+    servers,
+  } = settings?.dereferenceOAS === false ? openApiSpecification : resolveRefs(openApiSpecification);
 
   const prefix = determinePrefix(fastify, settings, servers);
 

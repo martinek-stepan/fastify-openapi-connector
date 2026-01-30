@@ -39,14 +39,12 @@ export const resolveRefs = <T>(schema: T): T => {
 
     const record = obj as Record<string, unknown>;
 
-    if ('$ref' in record && typeof record['$ref'] === 'string') {
-      return resolve(resolveRef(record['$ref']));
+    if ('$ref' in record && typeof record.$ref === 'string') {
+      return resolve(resolveRef(record.$ref));
     }
 
-    return Object.fromEntries(
-      Object.entries(record).map(([key, value]) => [key, resolve(value)])
-    );
+    return Object.fromEntries(Object.entries(record).map(([key, value]) => [key, resolve(value)]));
   };
 
   return resolve(schema) as T;
-}
+};

@@ -16,6 +16,7 @@ security:
 
 paths:
   /users:
+    x-codegen-path: users
     get:
       operationId: usersGet
       summary: Gets a list of users.
@@ -32,6 +33,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/fail"
   /teams:
+    x-codegen-path: teams
     get:
       security: []
       operationId: teamsGet
