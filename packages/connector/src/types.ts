@@ -58,7 +58,7 @@ export interface SecurityHandlers {
 /**
  * Dictionary of operation handlers, where key is operationId from OAS
  */
-export type OperationHandlers<Ops, Content = 'application/json'> = {
+export type OperationHandlers<Ops = Record<string, unknown>, Content = 'application/json'> = {
   [K in keyof Ops]: TypedHandlerBase<Ops, K, Content>;
 };
 // Dictionary of "untyped" (using base FastifyRequest without typed body and paremeters) operation handlers, where key is operationId from OAS
