@@ -7,8 +7,8 @@
 	"main": "./src/index.ts",
 	"scripts": {
 		"debug": "node --experimental-strip-types src/index.ts",
-		"generate:schema": "npx openapi-typescript --output ./src/generated/schema.ts ./openapi.yaml",
-		"generate:handlers": "fastify-oas-generator --schema-file ./src/generated/schema.ts --types-file ./src/generated/types.ts --service-file ./src/generated/service.ts --spec-file ./openapi.yaml --override-types-file --paths-dir ./src/routes --security-dir ./src/securityHandlers --webhooks-dir ./src/webhooks"
+		"generate:handlers": "fastify-oas-generator --schema-file ./src/generated/schema.ts --types-file ./src/generated/types.ts --service-file ./src/generated/service.ts --spec-file ./openapi.yaml --override-types-file --paths-dir ./src/routes --security-dir ./src/securityHandlers --webhooks-dir ./src/webhooks",
+		"generate:schema": "openapi-typescript --output ./src/generated/schema.ts ./openapi.yaml"
 	},
 	"dependencies": {
 		"fastify-openapi-connector-generator": "../generator",
@@ -18,6 +18,7 @@
 	},
 	"devDependencies": {
 		"typescript": "*",
+		"openapi-typescript": "^7.10.1",
 		"@types/node": "22"
 	}
 }
