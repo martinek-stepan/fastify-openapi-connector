@@ -4,25 +4,198 @@ info:
   description: API for testing fastify-openapi-connector
   contact:
     name: Stepan Martinek
-    email: stepan.martinek@lego.com
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
-  version: 0.0.3
+  version: 0.0.2
 servers:
   - url: http://localhost:3333
     description: Testing endpoint
 security:
-  - test-sec:
-      - scope:yay-nay
+  - test-sec: [scope:yay-nay]
+
+paths:
+  /users:
+    get:
+      operationId: usersGet
+      summary: Gets a list of users.
+      parameters:
+        - $ref: "#/components/parameters/offsetParam"
+        - $ref: "#/components/parameters/limitParam"
+      responses:
+        "200":
+          description: OK
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/fail"
+  /teams:
+    get:
+      security: []
+      operationId: teamsGet
+      summary: Gets a list of teams.
+      parameters:
+        - $ref: "#/components/parameters/offsetParam"
+        - $ref: "#/components/parameters/limitParam"
+      responses:
+        "200":
+          description: OK
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                x-test: "test"
+                properties:
+                  code:
+                    type: integer
+                    example: 500
+                  message:
+                    type: string
+                    example: Not Found
+                required:
+                  - code
+                  - message
+  /items:
+    get:
+      operationId: getItems
+      responses:
+        "200":
+          description: List of items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /item/{id}:
+    get:
+      operationId: getItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Single item
+          content:
+            application/json:
+              schema:
+                type: string
+  /documents:
+    get:
+      security: []
+      operationId: getDocuments
+      summary: Get Documents
+      responses:
+        "200":
+          description: Documents retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Document"
+                title: GetDocumentsOk
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        '500':
+          $ref: "#/components/responses/InternalServerError"
+      parameters:
+        - $ref: "#/components/parameters/filter"
+
 components:
   securitySchemes:
     test-sec:
       type: http
       scheme: bearer
       bearerFormat: JWT
+  schemas:
+    fail:
+      type: object
+      properties:
+        code:
+          type: integer
+          example: 404
+        message:
+          type: string
+          example: Not Found
+      required:
+        - code
+        - message
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+  responses:
+    Unauthorized:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: Unauthorized access. Authentication is required and has failed or has
+        not yet been provided.
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: The server could not understand the request due to invalid syntax.
+        The client should modify the request and try again.
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            x-test: "test"
+            properties:
+              code:
+                type: integer
+                example: 500
+              message:
+                type: string
+                example: Not Found
+            required:
+              - code
+              - message
   parameters:
-    offsetParam:
+    filter:
+      in: query
+      name: filter
+      style: form
+      schema:
+        type: string
+        examples:
+          - Pride and Prejudice
+          - Moby-Dick
+      explode: false
+      required: false
+      description: Filter the list of books according to the title.
+    offsetParam: # <-- Arbitrary name for the definition that will be used to refer to it.
+      # Not necessarily the same as the parameter name.
       in: query
       name: offset
       required: false
@@ -40,128 +213,3 @@ components:
         maximum: 50
         default: 20
       description: The numbers of items to return.
-  schemas:
-    Error:
-      type: object
-      properties:
-        code:
-          type: integer
-          example: 400
-        message:
-          type: string
-          example: Bad Request
-      required:
-        - code
-        - message
-  responses:
-    BadRequest:
-      description: Bad Request
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    NotFound:
-      description: Not Found
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-    InternalServerError:
-      description: Internal Server Error
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/Error"
-paths:
-  /health:
-    get:
-      operationId: healthGet
-      summary: Health check endpoint with no parameters.
-      description: Used to test OperationHandlers type issue with mixed param/no-param
-        operations.
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: healthy
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-  /users/{userId}:
-    get:
-      operationId: userGet
-      x-codegen-path: users
-      summary: Gets a single user by ID.
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        "200":
-          description: OK
-        "404":
-          $ref: "#/components/responses/NotFound"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-      tags:
-        - users
-  /users:
-    x-codegen-path: teams
-    get:
-      operationId: usersGet
-      x-codegen-path: users
-      summary: Gets a list of users.
-      parameters:
-        - $ref: "#/components/parameters/offsetParam"
-        - $ref: "#/components/parameters/limitParam"
-      responses:
-        "200":
-          description: OK
-        "400":
-          $ref: "#/components/responses/BadRequest"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-      tags:
-        - users
-  /teams:
-    x-codegen-path: teams
-    get:
-      operationId: teamsGet
-      summary: Gets a list of teams.
-      parameters:
-        - $ref: "#/components/parameters/offsetParam"
-        - $ref: "#/components/parameters/limitParam"
-      responses:
-        "200":
-          description: OK
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                type: object
-                x-test: test
-                properties:
-                  code:
-                    type: integer
-                    example: 500
-                  message:
-                    type: string
-                    example: Internal Server Error
-                required:
-                  - code
-                  - message
-      tags:
-        - teams
-tags:
-  - name: users
-    description: User operations
-  - name: teams
-    description: ""

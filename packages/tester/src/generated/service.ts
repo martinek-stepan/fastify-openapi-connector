@@ -1,17 +1,19 @@
 // THIS FILE IS AUTO GENERATED - DO NOT MANUALLY ALTER!!
 import type { OperationHandlers, SecurityHandlers } from 'fastify-openapi-connector';
-import { healthGet } from '../routes/healthGet.js';
-import { userGet } from '../routes/users/userGet.js';
-import { usersGet } from '../routes/users/usersGet.js';
-import { teamsGet } from '../routes/teams/teamsGet.js';
-import { testSec } from '../securityHandlers/test-sec.js';
-import type { operations } from './schema.js';
+import { getDocuments } from '../routes/getDocuments.ts';
+import { getItem } from '../routes/getItem.ts';
+import { getItems } from '../routes/getItems.ts';
+import { teamsGet } from '../routes/teamsGet.ts';
+import { usersGet } from '../routes/usersGet.ts';
+import { testSec } from '../securityHandlers/test-sec.ts';
+import type { operations } from './schema.ts';
 
 export const pathHandlers: OperationHandlers<operations> = {
-  'healthGet': healthGet,
-  'userGet': userGet,
   'usersGet': usersGet,
   'teamsGet': teamsGet,
+  'getItems': getItems,
+  'getItem': getItem,
+  'getDocuments': getDocuments,
 };
 
 export const securityHandlers: SecurityHandlers = {

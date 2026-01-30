@@ -36,6 +36,8 @@ export interface Options<Ops = any> {
     validateResponses?: boolean;
     // Possible content types used to setup validation based on spec. Prioritized list from first to last. Default ['application/json']
     contentTypes?: string[];
+    // Dereference any $ref in the OAS before processing. Default true
+    dereferenceOAS?: boolean;
   };
 }
 

@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import { fastifyPlugin } from 'fastify-plugin';
 import { registerComponents } from './components.js';
 import { determinePrefix } from './determinePrefix.js';
+import { resolveRefs } from './referenceResolver.js';
 import { setupRoutes } from './setupRoutes.js';
 import type { Options } from './types.js';
 
@@ -10,12 +11,16 @@ const myPluginAsync: FastifyPluginAsync<Options> = async (
   fastify,
   { openApiSpecification, securityHandlers, operationHandlers, settings },
 ) => {
-  const { components = {}, security: globalSecurity, paths, webhooks, servers } = openApiSpecification;
+
+  const { components = {}, security: globalSecurity, paths, webhooks, servers } = settings?.dereferenceOAS === false ? openApiSpecification : resolveRefs(openApiSpecification);
 
   const prefix = determinePrefix(fastify, settings, servers);
 
   const setupRoutesAndValidation = async (fastify: FastifyInstance): Promise<void> => {
-    registerComponents(fastify, components);
+    // There is no point of registering components if we dereferenced OAS already
+    if (settings?.dereferenceOAS !== true) {
+      registerComponents(fastify, components);
+    }
 
     if (settings?.initializePaths !== false && paths) {
       setupRoutes(
